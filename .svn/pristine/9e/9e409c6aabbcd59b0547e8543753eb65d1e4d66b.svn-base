@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="code_400">Malformed Request. Client Error!</string>
+    <string name="code_401">Fail Retrieve. Quantity submited is unvalid.</string>
+    <string name="code_404">Http Error!</string>
+    <string name="code_500">Server Error!</string>
+    <string name="code_501">Request Error!</string>    
+    <string name="familyNotFound">Sorry! No family have been assigned To This Ration Card.</string>
+    <string name="server_error1">Server shut down! Try again</string>
+    <string name="server_error">The server encountered an unexpected problem. If the problem persist, just close and relaunch the app</string>
+    <string name="code_501_message">Sorry! You are not allowed to serve this Ration Card.</string>
+    <string name="internet_error">Internet Error!</string>
+    <string name="internet_error_message">Please check your internet connection and retry.</string>
+    <string name="logout_message">Confirm logout!</string>
+    <string name="quantity_error">The quantity wished must be lower than quantity owned!\nQuantity owned is : </string>
+    <string name="quantity_wished_empty">Please enter the quantity wished.</string>
+    <string name="emptyFields">One (or many) fields are empty. Please fill out this  (or these) fields before continue the supply process</string>
+    <string name="noProductChoosed">You must choose at least one product before continue the supply process</string>
+    <string name="error">Error!</string>
+    <string name="supply_error">There are one or many quantities seized which are over than quantities owned. Please check errors dialogs to fix it</string>
+    <string name="SuccessTransactionMessage">Transaction completed successfully!</string>
+    <string name="login">Login&#8230;</string>
+    <string name="wait">Please wait&#8230;</string>
+    <string name="wait_loading">Please wait&#8230; this step may take a minute or more.</string>
+    <string name="sending"> Sending&#8230; </string>
+    <string name="loading"> Loading data &#8230;</string>
+    <string name="fill">Fill in all fields</string>
+    <string name="wrong">Wrong username or password</string>
+    <string name="empty_portfolio">This family has nothing in its portfolio. You cannot continue the distribution process</string>
+    <string name="no_photo_message">No picture have been taken for this transaction. Please take a picture before completing transaction. </string>
+    <string name="location_failed_message1">Position cannot be localized. Please Check your location Sharing in Device Settings and Retry.</string>
+    <string name="location_failed_message2">Position cannot be localized. So, the transaction cannot be completed. Please Check your location Sharing in Device Settings and Retry.</string>
+	<string name="request_not_received">The request doesn\'t reach the server, retry</string>
+</resources>

@@ -1,0 +1,17 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.Transaction;
+import first.endtoend.references.AbstractFacade;
+
+public class TransactionFacade extends AbstractFacade<Transaction> {
+
+	public TransactionFacade(Class<Transaction> entityClass, Context context)
+			throws IOException {
+		super(entityClass, context);
+	}
+
+	
+}

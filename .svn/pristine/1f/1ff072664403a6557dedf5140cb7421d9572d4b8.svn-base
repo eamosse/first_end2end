@@ -1,0 +1,358 @@
+package first.endtoend;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.cookie.Cookie;
+
+import android.app.ProgressDialog;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+import com.google.gson.reflect.TypeToken;
+
+import first.endtoend.facade.AddressFacade;
+import first.endtoend.facade.AidFacade;
+import first.endtoend.facade.BeneficiaryFacade;
+import first.endtoend.facade.CategoryFacade;
+import first.endtoend.facade.FamilyFacade;
+import first.endtoend.facade.PortfolioDetailFacade;
+import first.endtoend.facade.PortfolioFacade;
+import first.endtoend.facade.ProductFacade;
+import first.endtoend.facade.RationCardFacade;
+import first.endtoend.models.Address;
+import first.endtoend.models.Aid;
+import first.endtoend.models.Beneficiary;
+import first.endtoend.models.Category;
+import first.endtoend.models.Family;
+import first.endtoend.models.Portfolio;
+import first.endtoend.models.PortfolioDetail;
+import first.endtoend.models.Product;
+import first.endtoend.models.RationCard;
+import first.endtoend.utils.AppStatus;
+import first.endtoend.utils.Constant;
+import first.endtoend.utils.JsonHelper;
+
+public class LoadDataActivity extends MyActivity implements OnClickListener {
+
+	AQuery aquery;
+	CategoryFacade categoryFacade;
+	ProductFacade productFacade;
+	ProgressDialog dialog;
+	AidFacade aidFacade;
+	FamilyFacade familyFacade;
+	BeneficiaryFacade beneficiaryFacade;
+	PortfolioFacade portfolioFacade;
+	PortfolioDetailFacade portfolioDetailFacade;
+	AddressFacade addressFacade;
+	RationCardFacade rationCardFacade;
+	
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_loading_data);
+		try {
+			categoryFacade = new CategoryFacade(Category.class, getBaseContext());
+			productFacade = new ProductFacade(Product.class, getApplicationContext());
+			aidFacade = new AidFacade(Aid.class, getBaseContext());
+			familyFacade = new FamilyFacade(Family.class, getBaseContext());
+			beneficiaryFacade = new BeneficiaryFacade(Beneficiary.class, getBaseContext());
+			portfolioFacade = new PortfolioFacade(Portfolio.class, getBaseContext());
+			portfolioDetailFacade = new PortfolioDetailFacade(PortfolioDetail.class, getBaseContext());
+			addressFacade = new AddressFacade(Address.class, getApplicationContext());
+			rationCardFacade = new RationCardFacade(RationCard.class, getBaseContext());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		Button loadBtn = (Button) findViewById(R.id.loadBtn);
+		loadBtn.setOnClickListener(this);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.loadBtn:		
+			load_categories();
+			break;
+		}
+	}
+
+
+	public void load_categories(){
+		if (AppStatus.getInstance(LoadDataActivity.this).isOnline(LoadDataActivity.this)) {
+			System.out.println(">>>>>>< Loading Categories <<<<<<<<");
+			String url = getString(R.string.url) + getString(R.string.load_Categories);
+			aquery = new AQuery(getApplicationContext());
+			dialog = new ProgressDialog(getApplicationContext());
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(false);
+			dialog.setInverseBackgroundForced(false);
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setTitle(R.string.loading);
+			dialog.setMessage(getString(R.string.wait_loading));
+
+			AjaxCallback<String> cb = new AjaxCallback<String>() {
+
+				@Override
+				public void callback(String url, String json, AjaxStatus status) {
+					switch (status.getCode()){
+					case Constant.REQUEST_OK:
+						if(!status.getCookies().isEmpty())
+							LoginActivity.cookies =   status.getCookies();
+
+						int code = JsonHelper.getResponseCodeFromJson(json);
+
+						switch (code) {
+						case Constant.REQUEST_OK:	
+							Type listType = new TypeToken<ArrayList<Category>>() {}.getType();
+                            ArrayList<Category> categories = JsonHelper.getListObjectFromJson(json,Constant.LIST_CATEGORIES,listType);
+							
+							for(Category c : categories){
+								try {
+									categoryFacade.insert(c);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							
+							System.out.println("<<<<>>>> End Loading Categories");
+							load_products();							
+							break;
+						}
+						break;
+					}
+				}
+			};
+
+			if (LoginActivity.cookies != null)
+				for (Cookie cookie : LoginActivity.cookies) {
+					Log.v("Adding cookie", cookie.getName() + " Value " + cookie.getValue());
+					cb.cookie(cookie.getName(), cookie.getValue());
+				}
+			aquery.progress(dialog).ajax(url, null, String.class, cb);
+
+		}
+	}
+
+	public void load_products(){
+		if (AppStatus.getInstance(LoadDataActivity.this).isOnline(LoadDataActivity.this)) {
+			System.out.println(">>>>>>< Loading Products >><<<<<<<");
+			String url = getString(R.string.url) + getString(R.string.load_Products);
+			aquery = new AQuery(getApplicationContext());
+			dialog = new ProgressDialog(getApplicationContext());
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(false);
+			dialog.setInverseBackgroundForced(false);
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setTitle(R.string.loading);
+			dialog.setMessage(getString(R.string.wait_loading));
+
+			AjaxCallback<String> cb = new AjaxCallback<String>() {
+
+				@Override
+				public void callback(String url, String json, AjaxStatus status) {
+					switch (status.getCode()){
+					case Constant.REQUEST_OK:
+						if(!status.getCookies().isEmpty())
+							LoginActivity.cookies =   status.getCookies();
+
+						int code = JsonHelper.getResponseCodeFromJson(json);
+
+						switch (code) {
+						case Constant.REQUEST_OK:	
+							Type listType = new TypeToken<ArrayList<Product>>() {}.getType();
+                            ArrayList<Product> products = JsonHelper.getListObjectFromJson(json,Constant.LIST_PRODUCTS,listType);
+							
+							
+							for(Product p : products){
+								try {
+									productFacade.insert(p);
+									download(getString(R.string.url)+getString(R.string.productPhotosOnLine), p.getIconeURL(), getString(R.string.productPhotosOffLine));
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							
+							System.out.println(">>>>>>>>>>>  End Loading Product<<<<<<<<<<<<");
+							load_aids();							
+							break;
+						}
+						break;
+					}
+				}
+			};
+
+			if (LoginActivity.cookies != null)
+				for (Cookie cookie : LoginActivity.cookies) {
+					Log.v("Adding cookie", cookie.getName() + " Value " + cookie.getValue());
+					cb.cookie(cookie.getName(), cookie.getValue());
+				}
+			aquery.progress(dialog).ajax(url, null, String.class, cb);
+
+		}
+	}
+
+	public void load_aids(){
+		if (AppStatus.getInstance(LoadDataActivity.this).isOnline(LoadDataActivity.this)) {
+			System.out.println(">>>>>>> Loading Aids <<<<<<<<<<<<<<<");
+			String url = getString(R.string.url) + getString(R.string.load_Aids);
+			aquery = new AQuery(getApplicationContext());
+			dialog = new ProgressDialog(getApplicationContext());
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(false);
+			dialog.setInverseBackgroundForced(false);
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setTitle(R.string.loading);
+			dialog.setMessage(getString(R.string.wait_loading));
+
+			AjaxCallback<String> cb = new AjaxCallback<String>() {
+
+				@Override
+				public void callback(String url, String json, AjaxStatus status) {
+					switch (status.getCode()){
+					case Constant.REQUEST_OK:
+						if(!status.getCookies().isEmpty())
+							LoginActivity.cookies =   status.getCookies();
+
+						int code = JsonHelper.getResponseCodeFromJson(json);
+
+						switch (code) {
+						case Constant.REQUEST_OK:	
+							Type listType = new TypeToken<ArrayList<Aid>>() {}.getType();
+                            ArrayList<Aid> aids = JsonHelper.getListObjectFromJson(json,Constant.LIST_AIDS,listType);
+							for(Aid a : aids){
+								try {
+									aidFacade.insert(a);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+							System.out.println(">>>>>> End Loading Aids >>>>>><<<<<<<");
+							load_families();							
+							break;
+						}
+						break;
+					}
+				}
+			};
+
+			if (LoginActivity.cookies != null)
+				for (Cookie cookie : LoginActivity.cookies) {
+					Log.v("Adding cookie", cookie.getName() + " Value " + cookie.getValue());
+					cb.cookie(cookie.getName(), cookie.getValue());
+				}
+			aquery.progress(dialog).ajax(url, null, String.class, cb);
+
+		}
+	}
+
+
+	public void load_families(){
+
+		if (AppStatus.getInstance(LoadDataActivity.this).isOnline(LoadDataActivity.this)) {
+			
+			System.out.println(">>>>> Loading Families <<<<<<<<<<<<");
+			String url = getString(R.string.url) + getString(R.string.load_Families);
+			aquery = new AQuery(getApplicationContext());
+			dialog = new ProgressDialog(getApplicationContext());
+			dialog.setIndeterminate(true);
+			dialog.setCancelable(false);
+			dialog.setInverseBackgroundForced(false);
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setTitle(R.string.loading);
+			dialog.setMessage(getString(R.string.wait_loading));
+
+			AjaxCallback<String> cb = new AjaxCallback<String>() {
+
+				@Override
+				public void callback(String url, String json, AjaxStatus status) {
+					switch (status.getCode()){
+					case Constant.REQUEST_OK:
+						if(!status.getCookies().isEmpty())
+							LoginActivity.cookies =   status.getCookies();
+
+						int code = JsonHelper.getResponseCodeFromJson(json);
+
+						switch (code) {
+						case Constant.REQUEST_OK:	
+							Type listType = new TypeToken<ArrayList<Family>>() {}.getType();
+                            ArrayList<Family> families = JsonHelper.getListObjectFromJson(json,Constant.LIST_FAMILIES,listType);
+							
+                            for(Family f : families){
+								try {
+									familyFacade.insert(f);
+									
+									for(Beneficiary fib : f.getBeneficiaries()){
+										fib.setFamily(f);
+										beneficiaryFacade.insert(fib);
+										download(getString(R.string.url)+getString(R.string.benefPhotosOnLine), fib.getPhotoURL(), getString(R.string.benefPhotosOffLine));
+									}
+									
+									Portfolio p = f.getPortfolio();
+									p.setFamily(f);
+									portfolioFacade.insert(p);
+									
+									for(PortfolioDetail pfd : p.getDetails()){
+										pfd.setPortfolio(p);
+										portfolioDetailFacade.insert(pfd);
+									}
+									
+									RationCard r = f.getRationCard();
+									r.setFamily(f);
+									rationCardFacade.insert(r);
+									
+									Address adr = f.getAddress();
+									adr.setFamily(f);
+									addressFacade.insert(adr);
+									
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+                            
+                            System.out.println(">>>>>>>> End Loading all Families <<<<<<<<<<");
+							break;
+						}
+						break;
+					}
+				}
+			};
+
+			if (LoginActivity.cookies != null)
+				for (Cookie cookie : LoginActivity.cookies) {
+					Log.v("Adding cookie", cookie.getName() + " Value " + cookie.getValue());
+					cb.cookie(cookie.getName(), cookie.getValue());
+				}
+			aquery.progress(dialog).ajax(url, null, String.class, cb);
+
+		}
+	}
+	
+	public void download(String url,String imageName, String location){
+		File ext = Environment.getExternalStorageDirectory();
+		File target = new File(ext, getString(R.string.localURI)+location+imageName);              		
+		aquery.progress(null).download(url, target, new AjaxCallback<File>(){
+			public void callback(String url, File file, AjaxStatus status) {
+				if(file != null){
+					System.out.println("File: " + file.length() + ":" + file+"  Status :"+status);
+				}else{
+					System.out.println("Failed to load file  "+ status);
+				}
+			}
+
+		});
+	}
+
+}

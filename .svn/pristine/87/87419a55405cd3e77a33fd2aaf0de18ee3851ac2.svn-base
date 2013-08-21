@@ -1,0 +1,254 @@
+package first.endtoend;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.http.cookie.Cookie;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+
+import first.endtoend.models.FIAgent;
+import first.endtoend.utils.AppStatus;
+import first.endtoend.utils.Constant;
+import first.endtoend.utils.JsonHelper;
+import first.endtoend.utils.ResponseStatus;
+
+public class LoginActivity extends Activity{
+	String username, password;
+	public ResponseStatus responseStatus;
+	public String messageReceived;
+	public static FIAgent user;
+	public static  List<Cookie> cookies;
+	AlertDialog.Builder alert;
+	SharedPreferences settings;
+	String PREF_NAME = "my_pref_settings";
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_login);
+
+		alert = new AlertDialog.Builder(this);
+
+		Button connexion = (Button) findViewById(R.id.boutonConnexion);
+		connexion.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				username = ((EditText) findViewById(R.id.editLogin)).getText().toString();
+				password = ((EditText) findViewById(R.id.editPassword)).getText().toString();
+
+				if((username.equals("")) && (password.equals(""))){
+					Toast.makeText(LoginActivity.this, R.string.fill, Toast.LENGTH_SHORT).show();
+				}
+				else{
+					settings = getSharedPreferences(PREF_NAME, 0); //load the preferences
+					System.out.println("loading preferences");
+					Boolean hasRun = settings.getBoolean("hasRun", false); //see if it's run before, default no
+					System.out.println(hasRun);
+					if (!hasRun) {					    
+
+						//code for if this is the first time the app has run
+						String url = getString(R.string.url) + getString(R.string.connexion);            	
+						if (AppStatus.getInstance(LoginActivity.this).isOnline(LoginActivity.this)) {
+							async_post(url, true, false,username, password);
+						}
+						else {
+							alert.setTitle(R.string.internet_error);
+							alert.setIcon(android.R.drawable.ic_dialog_alert);
+							alert.setMessage(R.string.internet_error_message);
+							alert.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									LoginActivity.this.startActivity(new Intent(Settings.ACTION_SETTINGS));
+								}
+							});
+							alert.setNegativeButton(R.string.retry, new DialogInterface.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									return;
+								}
+							});
+							alert.show();
+						}					    
+					}
+					else {
+						//code if the app HAS run before
+						String usernameStored = settings.getString("username", "username");
+						
+						String passwordStored = settings.getString("password", "password");
+						System.out.println(usernameStored+" "+passwordStored);
+						String firstNameStored = settings.getString("firstName", "");
+						String lastNameStored = settings.getString("lastName", "");
+						String sessionIdStored = settings.getString("sessionId", "");
+						int agentIdStored = settings.getInt("agentId", 0);
+
+						if(username.equals(usernameStored) && password.equals(passwordStored)){
+							user = new FIAgent(agentIdStored,firstNameStored, lastNameStored, usernameStored, passwordStored, sessionIdStored);
+
+							Intent intent = new Intent(LoginActivity.this, TagActivity.class);
+							startActivity(intent);
+							finish();
+						}
+						else{
+							alert.setTitle(R.string.error);
+							alert.setIcon(android.R.drawable.ic_delete);
+							alert.setMessage(R.string.wrong);
+							alert.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+								}
+							});
+
+							alert.show();
+
+							
+						}
+					}
+
+				}                  
+			}
+		});
+	}
+
+
+	@Override
+	public void onBackPressed() {
+		alert.setMessage(getString(R.string.quitconfirm));
+		alert.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dlg, int sumthin) {
+				finish();
+			}
+		});
+		alert.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		alert.show();
+	}
+
+	/**
+	 * Method for connection online
+	 * @param url
+	 * @param ajax
+	 * @param c
+	 * @param username
+	 * @param password
+	 */
+	public void async_post(String url, boolean ajax, boolean c, final String username, final String password) {
+		AQuery aq = new AQuery(getApplicationContext());
+		ProgressDialog dialog = new ProgressDialog(this);
+		dialog.setIndeterminate(true);
+		dialog.setCancelable(true);
+		dialog.setInverseBackgroundForced(false);
+		dialog.setCanceledOnTouchOutside(true);
+		dialog.setTitle(R.string.login);
+		dialog.setMessage(getString(R.string.wait));
+		try {
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put(Constant.SPRING_SECURITY_USERNAME, username);
+			params.put(Constant.SPRING_SECURITY_PASSWORD, password);
+			params.put(Constant.SPRING_SECURITY_REMEMBER_ME, "true");
+			AjaxCallback<String> cb = new AjaxCallback<String>() {
+				@Override
+				public void callback(String url, String json, AjaxStatus status) {
+					switch ((status.getCode())) {
+					case Constant.REQUEST_OK:  //request http success
+						//get the cookies set by spring security
+						cookies = status.getCookies();
+						int code = JsonHelper.getResponseCodeFromJson(json);
+						switch (code) {
+						case Constant.REQUEST_OK:
+
+							cookies = status.getCookies();
+							user = (FIAgent) JsonHelper.getObjectFromJson(json, FIAgent.class, Constant.USER);
+
+							SharedPreferences.Editor edit = settings.edit();
+							
+							edit.putInt("agentId", user.getId());
+							edit.putString("username", username);  //storing username
+							edit.putString("password", password);  //storing password
+							edit.putString("firstName", user.getFirstName());
+							edit.putString("lastName", user.getLastName());
+							edit.putString("sessionId", user.getSessionId());
+
+							edit.commit(); //apply
+
+							
+							
+							Intent intent = new Intent(LoginActivity.this, LoadDataActivity.class);
+							intent.putExtra("agent", user);
+							startActivity(intent);
+							finish();
+							break;
+
+						case Constant.NOT_FOUND:
+
+							alert.setTitle(R.string.error);
+							alert.setIcon(android.R.drawable.ic_delete);
+							alert.setMessage(R.string.wrong);
+							alert.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+								}
+							});
+
+							alert.show();
+							break;
+						default://TODO: to be completed
+
+						}
+						break;
+
+					default:
+
+						alert.setTitle(R.string.code_404);
+						alert.setIcon(android.R.drawable.ic_delete);
+						alert.setMessage(R.string.request_not_received);
+						alert.setPositiveButton(R.string.close, new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});
+
+						alert.show();
+						break;
+					}
+					cookies = status.getCookies();
+
+				}
+			};
+			cb.header("X-Requested-With", "true");
+			aq.progress(dialog).ajax(url, params, String.class, cb);
+		} catch (Exception e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+	}
+
+}

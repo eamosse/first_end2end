@@ -1,0 +1,587 @@
+package first.endtoend;
+
+import java.io.File;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONObject;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.TextView;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+import com.google.android.gcm.GCMRegistrar;
+import com.google.gson.reflect.TypeToken;
+
+import first.endtoend.facades.AddressFacade;
+import first.endtoend.facades.AidFacade;
+import first.endtoend.facades.BeneficiaryFacade;
+import first.endtoend.facades.CategoryFacade;
+import first.endtoend.facades.FamilyFacade;
+import first.endtoend.facades.PortfolioDetailFacade;
+import first.endtoend.facades.PortfolioFacade;
+import first.endtoend.facades.ProductFacade;
+import first.endtoend.facades.RationCardFacade;
+import first.endtoend.helpers.AQueryHelper;
+import first.endtoend.helpers.Constant;
+import first.endtoend.helpers.DialogHelper;
+import first.endtoend.helpers.InternetHelper;
+import first.endtoend.helpers.JsonHelper;
+import first.endtoend.models.Address;
+import first.endtoend.models.Aid;
+import first.endtoend.models.Beneficiary;
+import first.endtoend.models.Category;
+import first.endtoend.models.Family;
+import first.endtoend.models.Portfolio;
+import first.endtoend.models.PortfolioDetail;
+import first.endtoend.models.Product;
+import first.endtoend.models.RationCard;
+
+public class SetupActivity extends Activity {
+	View status;
+	TextView statusMessage;
+	private Context context;
+	private String regId;
+	SharedPreferences settings;
+	String PREF_NAME = "my_pref_settings";
+	AQuery aquery;
+	ProgressDialog dialog;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_setup);
+		context = this;
+		status = findViewById(R.id.setup_status);
+		statusMessage = (TextView) findViewById(R.id.status_message);
+		settings = getSharedPreferences(PREF_NAME, 0);
+		aquery = new AQuery(this);
+		dialog = new ProgressDialog(this);
+		sendRegId();
+	}
+
+	class Custom {
+		String url;
+		Class<?> clazz;
+
+		public Custom(String url, Class<?> clazz) {
+			super();
+			this.url = url;
+			this.clazz = clazz;
+		}
+
+	}
+
+	private void startSynchro() {
+		Custom[] customs = new Custom[] {
+				new Custom(getString(R.string.url)
+						+ getString(R.string.load_Categories), Category.class),
+						new Custom(getString(R.string.url)
+								+ getString(R.string.load_Products), Product.class),
+								new Custom(getString(R.string.url)
+										+ getString(R.string.load_Aids), Aid.class),
+										new Custom(getString(R.string.url)
+												+ getString(R.string.load_Families), Family.class), };
+		new Task().execute(customs);
+
+	}
+
+	/**
+	 * 
+	 * @return the GCM Registration Id for this phone
+	 */
+	public String getGCMRegistrationId(Context context){
+
+		GCMRegistrar.checkDevice(context);
+		GCMRegistrar.checkManifest(context);
+		regId = GCMRegistrar.getRegistrationId(context);
+		Log.i("GCM Register info", "reg Id is : "+regId);
+
+		if(regId == ""){
+			GCMRegistrar.register(context, Constant.GCM_ID);
+			regId = GCMRegistrar.getRegistrationId(context);
+
+			Log.i("GCM Register info", "New GCM Register Id for this phone is : "+regId);
+		}
+		else {
+			Log.d("GCM Register info", "this phone is already registered as :" + regId);
+		}
+		return regId;
+	}
+
+	private class Task extends AsyncTask<Custom, Void, Void> {
+
+		// -- gets called just before thread begins
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			showProgress(true);
+		}
+
+		// -- called if the cancel button is pressed
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+			showProgress(false);
+		}
+
+		String message;
+		boolean status = true;
+
+		private void setMessage(final String message){
+			statusMessage.post(new Runnable() {
+				@Override
+				public void run() {
+					statusMessage.setText(message);
+				}
+			});
+		}
+
+		@Override
+		protected Void doInBackground(Custom... params) {
+			String cookieName = settings.getString("cookieName", "");
+			String cookieValue = settings.getString("cookieValue", "");
+			for (final Custom task : params) {
+				// Update the screen
+				AjaxCallback<String> cb = new AjaxCallback<String>().header(
+						"Content-Type", "application/json").header("Accept",
+								"application/json");
+				cb.cookie(cookieName, cookieValue);
+				setMessage(task.clazz.getSimpleName() + "...");
+				cb.url(task.url).type(String.class);
+				cb.cookie(cookieName, cookieValue);
+				aquery.sync(cb);
+				String json = cb.getResult();
+				System.out.println("response __> " + json);
+				switch (cb.getStatus().getCode()) {
+				case 200:
+					if (JsonHelper.isResponseJson(json)) {
+						if (JsonHelper.isResponseSucess(json)) {
+							try {
+								if (task.clazz.equals(Category.class)) {
+									Type listType = new TypeToken<ArrayList<Category>>() {
+									}.getType();
+									ArrayList<Category> categories = JsonHelper
+											.getListObjectFromJson(json,
+													Constant.LIST_CATEGORIES,
+													listType);
+									CategoryFacade categoryFacade = new CategoryFacade(
+											context);
+									if (!categories.isEmpty())
+										for (Category c : categories)
+											try {
+												categoryFacade.insert(c);
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+								} else if (task.clazz.equals(Product.class)) {
+									Type listType = new TypeToken<ArrayList<Product>>() {
+									}.getType();
+									ArrayList<Product> products = JsonHelper
+											.getListObjectFromJson(json,
+													Constant.LIST_PRODUCTS,
+													listType);
+									ProductFacade productFacade = new ProductFacade(
+											context);
+									if (!products.isEmpty())
+
+										for (final Product p : products)
+											try {
+												if (p.getIconeURL() == null)
+													p.setIconeURL("");
+												productFacade.insert(p);
+
+												String path = getString(R.string.productPhotosOffLine)
+														+ p.getIconeURL();
+												File file = new File(
+														Environment
+														.getExternalStorageDirectory(),
+														path);
+
+												if (!file.exists()) {
+													statusMessage
+													.post(new Runnable() {
+														@Override
+														public void run() {
+															statusMessage
+															.setText("Loading image of product "
+																	+ p.getName());
+														}
+													});
+													Log.i("Load Data Activity",
+															"Image of product "
+																	+ p.getName()
+																	+ " does not exist");
+													AQueryHelper
+													.download(
+															aquery,
+															getString(R.string.url)
+															+ getString(R.string.productPhotosOnLine),
+															p.getIconeURL(),
+															getString(R.string.productPhotosOffLine));
+												} else {
+													Log.i("Load Data Activity",
+															"Image of product "
+																	+ p.getName()
+																	+ " already exists");
+												}
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+								} else if (task.clazz.equals(Aid.class)) {
+									Type listType = new TypeToken<ArrayList<Aid>>() {
+									}.getType();
+									ArrayList<Aid> aids = JsonHelper
+											.getListObjectFromJson(json,
+													Constant.LIST_AIDS,
+													listType);
+									AidFacade aidFacade = new AidFacade(context);
+									if (!aids.isEmpty())
+										for (Aid a : aids)
+											try {
+												aidFacade.insert(a);
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+								} else if (task.clazz.equals(Family.class)) {
+									Type listType = new TypeToken<ArrayList<Family>>() {
+									}.getType();
+									ArrayList<Family> families = JsonHelper
+											.getListObjectFromJson(json,
+													Constant.LIST_FAMILIES,
+													listType);
+									FamilyFacade familyFacade = new FamilyFacade(
+											context);
+									BeneficiaryFacade beneficiaryFacade = new BeneficiaryFacade(
+											context);
+									PortfolioFacade portfolioFacade = new PortfolioFacade(
+											context);
+									PortfolioDetailFacade portfolioDetailFacade = new PortfolioDetailFacade(
+											context);
+									AddressFacade addressFacade = new AddressFacade(
+											context);
+									RationCardFacade rationCardFacade = new RationCardFacade(
+											context);
+									if (!families.isEmpty())
+
+										for (Family f : families) {
+											try {
+												familyFacade.insert(f);
+
+												for (Beneficiary fib : f
+														.getBeneficiaries()) {
+													fib.setFamily(f);
+													beneficiaryFacade
+													.insert(fib);
+
+													String path = getString(R.string.benefPhotosOffLine)
+															+ fib.getPhotoURL();
+													File file = new File(
+															Environment
+															.getExternalStorageDirectory(),
+															path);
+													if (!file.exists()) {
+														Log.i("Load Data Activity",
+																"Image of Beneficiary "
+																		+ fib.getFirstName()
+																		+ " does not exist");
+														AQueryHelper
+														.download(
+																aquery,
+																getString(R.string.url)
+																+ getString(R.string.benefPhotosOnLine),
+																fib.getPhotoURL(),
+																getString(R.string.benefPhotosOffLine));
+													} else {
+														Log.i("Load Data Activity",
+																"Image of Beneficiary "
+																		+ fib.getFirstName()
+																		+ " already exist");
+													}
+												}
+
+												Portfolio p = f.getPortfolio();
+												if (p != null) {
+													p.setFamily(f);
+													portfolioFacade.insert(p);
+
+													for (PortfolioDetail pfd : p
+															.getDetails()) {
+														pfd.setPortfolio(p);
+														portfolioDetailFacade
+														.insert(pfd);
+													}
+												} else {
+													System.out
+													.println("No possible inserting portfolio and pfd");
+												}
+
+												RationCard r = f
+														.getRationCard();
+												System.out
+												.println("RationCard a inserer : "
+														+ r.getTagId());
+												r.setFamily(f);
+												rationCardFacade.insert(r);
+												RationCard rc = rationCardFacade
+														.findByTagId(r
+																.getTagId());
+												System.out
+												.println("RationCard installee : "
+														+ rc.getTagId());
+
+												Address adr = f.getAddress();
+												adr.setFamily(f);
+												addressFacade.insert(adr);
+
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+										}
+								}
+							} catch (Exception e) {
+								status = false; 
+								message=e.getMessage();
+							}
+						} else {
+							status = false;
+							message = "Nous avons bien reçu du JSON mais le format ne correspond pas au model convenu :) \n"
+									+ json;
+
+						}
+					} else {
+						status = false;
+						message = "La réponse ne recue ne correspond pas au format attendu ! \n"
+								+ json;
+
+					}
+					break;
+
+				default:
+					status = false;
+					message = cb.getStatus().getMessage();
+					break;
+				}
+				if (!status)
+					break;
+			}
+			return null;
+		}
+
+
+
+		@Override
+		protected void onPostExecute(Void nada) {
+			// Here the long task in the background thread has done, we can
+			// dismiss the dialog ant let the user continue his task
+			showProgress(false);
+			if (status){
+				settings.edit().putBoolean("hasRun", true);
+				settings.edit().commit();
+				new AlertDialog.Builder(context)
+				.setTitle(R.string.app_name)
+				.setMessage(R.string.load_successfully)
+				.setCancelable(false)
+				.setPositiveButton(R.string.ok,
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						// TODO Auto-generated method stub
+						startActivity(new Intent(
+								SetupActivity.this,
+								TagActivity.class));
+						finish();
+					}
+				}).show();
+			}
+			else {
+				WebView wv = new WebView(context);
+				// String html = "<html><body>some html here</body></html>";
+				wv.loadData(message, "text/html", "UTF-8");
+				new AlertDialog.Builder(context)
+				.setTitle(R.string.app_name)
+				.setView(wv)
+				// .setMessage(message)
+				.setCancelable(false)
+				.setPositiveButton(R.string.retry,
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						startSynchro();
+					}
+				})
+				.setNegativeButton(R.string.cancel,
+						new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						finish();
+					}
+				}).show();
+			}
+		}
+
+	}
+
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+	private void showProgress(final boolean show) {
+		// On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+		// for very easy animations. If available, use these APIs to fade-in
+		// the progress spinner.
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+			int shortAnimTime = getResources().getInteger(
+					android.R.integer.config_shortAnimTime);
+
+			status.setVisibility(View.VISIBLE);
+			status.animate().setDuration(shortAnimTime).alpha(show ? 1 : 0)
+			.setListener(new AnimatorListenerAdapter() {
+				@Override
+				public void onAnimationEnd(Animator animation) {
+					status.setVisibility(show ? View.VISIBLE
+							: View.GONE);
+				}
+			});
+		} else {
+			// The ViewPropertyAnimator APIs are not available, so simply show
+			// and hide the relevant UI components.
+			status.setVisibility(show ? View.VISIBLE : View.GONE);
+		}
+	}
+
+	public void sendRegId(){
+		if(InternetHelper.isOnline(context)){
+			
+			final String cookieName = settings.getString("cookieName", "");
+			
+			final String cookieValue = settings.getString("cookieValue", "");
+
+			System.out.println(cookieName+"  "+cookieValue); 
+			
+			String regId = getGCMRegistrationId(context);
+
+			String url = getString(R.string.url)+getString(R.string.sendRegId);
+
+			DialogHelper.showProcessingDialog(dialog, getString(R.string.sending), getString(R.string.sending));
+
+			final HashMap<String, String> params = new HashMap<String, String>();
+			params.put(Constant.REG_ID, regId);
+
+			aquery.progress(dialog).ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>(){
+				@Override
+				public void callback(String url, JSONObject object,AjaxStatus status) {
+					System.out.println("Sending REGID status code :"+status.getCode());
+					switch (status.getCode()) {
+					
+					case Constant.REQUEST_OK:
+
+						int code = JsonHelper.getResponseCodeFromJson(object);
+						System.out.println("SendRegId Response code is :"+code);
+						switch (code) {
+						case Constant.REQUEST_OK:
+							startSynchro();
+							break;
+						default:
+							Builder alert;
+							alert = new AlertDialog.Builder(context);
+							alert.setIcon(android.R.drawable.ic_delete);
+							alert.setTitle(R.string.error);
+							alert.setMessage(getString(R.string.error_while_sending)+" "+Constant.REG_ID);
+							alert.setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									sendRegId();
+								}
+							});
+
+							alert.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog, int which) {
+									dialog.dismiss();
+								}
+							});	
+
+							alert.show();
+
+
+							break;
+						}
+
+						break;
+
+					default:
+						Builder alert;
+						alert = new AlertDialog.Builder(context);
+						alert.setIcon(android.R.drawable.ic_delete);
+						alert.setTitle(R.string.error);
+						alert.setMessage(getString(R.string.error_while_sending)+" "+Constant.REG_ID);
+						alert.setPositiveButton(R.string.retry, new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								sendRegId();
+							}
+						});
+
+						alert.setNegativeButton(R.string.close, new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+							}
+						});	
+
+						alert.show();
+						break;
+					}
+
+				}
+			}.cookie(cookieName, cookieValue));
+		}
+		else {
+			Builder alert;
+			alert = new AlertDialog.Builder(context);
+			alert.setTitle(R.string.internet_error);
+			alert.setIcon(android.R.drawable.ic_dialog_alert);
+			alert.setMessage(R.string.internet_error_message);
+			alert.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					context.startActivity(new Intent(Settings.ACTION_SETTINGS));
+				}
+			});
+			alert.setNegativeButton(R.string.retry, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					sendRegId();
+				}
+			});
+			alert.show();
+		}					    
+
+	}
+
+}

@@ -1,0 +1,16 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.Category;
+import first.endtoend.references.AbstractFacade;
+
+public class CategoryFacade extends AbstractFacade<Category> {
+
+	public CategoryFacade(Class<Category> entityClass, Context context)
+			throws IOException {
+		super(entityClass, context);
+	}
+
+}

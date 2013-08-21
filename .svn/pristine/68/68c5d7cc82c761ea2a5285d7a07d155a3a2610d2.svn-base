@@ -1,0 +1,109 @@
+package first.endtoend.adapters;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.TextView;
+import first.endtoend.R;
+import first.endtoend.models.PortfolioDetail;
+
+public class PortfolioAdapter extends BaseAdapter {
+
+	private Context context;
+	private List<PortfolioDetail> portfolio;
+	private ArrayList<PortfolioDetail> productsSelected = new ArrayList<PortfolioDetail>();
+
+	public PortfolioAdapter(Context context, List<PortfolioDetail> portfolio) {
+		this.context = context;
+		this.portfolio = portfolio;
+	}
+
+	public View getView(final int position, View convertView, ViewGroup parent) {
+
+		LayoutInflater inflater = (LayoutInflater) context
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+		View gridView;
+
+		if (convertView == null) {
+
+			gridView = new View(context);
+			PortfolioDetail pd = portfolio.get(position);
+
+			// get layout from layout_portfolio.xml
+			gridView = inflater.inflate(R.layout.layout_portfolio, null);
+
+			// set value into text views
+			TextView tv1 = (TextView) gridView.findViewById(R.id.productname);
+			tv1.setText(pd.getProduct().getName());
+
+			TextView tv2 = (TextView) gridView.findViewById(R.id.productprice);
+			tv2.setText(""+pd.getProduct().getPrice()+" Rps");
+
+			TextView tv3 = (TextView) gridView.findViewById(R.id.productquantity);
+			tv3.setText(""+pd.getQuantity()+" "+pd.getProduct().getUnity());
+
+			// set image based on selected text
+			//ImageView imageView = (ImageView) gridView.findViewById(R.id.gridImage);
+
+			//Managing the gridview checkbox
+			CheckBox checkBox = (CheckBox) gridView.findViewById(R.id.checkBox);			
+			checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+				@Override
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					PortfolioDetail pfd = (PortfolioDetail) getItem(position);
+					System.out.println("Test Adapter --> " + pfd.hashCode());
+					if(isChecked){						
+						productsSelected.add(pfd);	
+					}
+					else{
+						productsSelected.remove(pfd);
+						
+					}	
+				}
+			});
+			
+
+		} else {
+			gridView = (View) convertView;
+		}
+
+		return gridView;
+	}
+
+	public int getCount() {
+		return portfolio.size();
+	}
+
+	public Object getItem(int position) {
+		return portfolio.get(position);
+	}
+
+	public long getItemId(int position) {
+		return position;
+	}
+
+	/**
+	 * @return the productSelecteds
+	 */
+	public ArrayList<PortfolioDetail> getProductsSelected() {
+		return productsSelected;
+	}
+
+	/**
+	 * @param productSelecteds the productSelecteds to set
+	 */
+	public void setProductsSelected(ArrayList<PortfolioDetail> productsSelected) {
+		this.productsSelected = productsSelected;
+	}
+
+
+}

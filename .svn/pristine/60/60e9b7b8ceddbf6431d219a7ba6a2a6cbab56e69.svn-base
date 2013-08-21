@@ -1,0 +1,124 @@
+package first.endtoend.models;
+
+import java.io.Serializable;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import first.endtoend.references.ClassPersistable;
+import first.endtoend.references.FieldPersistable;
+import first.endtoend.references.FieldPersistable.Type;
+
+@ClassPersistable
+public class Beneficiary implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Expose 
+	@SerializedName("id")
+	@FieldPersistable(value=Type.PRIMARY_KEY)
+	public int beneficiaryId;
+
+	@Expose (serialize=false)
+	@SerializedName("photoURL")
+	@FieldPersistable
+	private String photoURL;
+
+	@Expose (serialize=false)
+	@SerializedName("firstName")
+	@FieldPersistable
+	private String firstName;
+
+	@Expose (serialize=false)
+	@SerializedName("lastName")
+	@FieldPersistable
+	private String lastName;
+
+	@FieldPersistable(value=Type.FOREIGN_KEY)
+	private Family family;
+
+	public Beneficiary(int beneficiaryId, String photoURL, String firstName,
+			String lastName, Family family) {
+		this.beneficiaryId = beneficiaryId;
+		this.photoURL = photoURL;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.family = family;
+	}
+
+	public Beneficiary() {
+	}
+	
+	/**
+	 * @return the beneficiaryId
+	 */
+	public int getBeneficiaryId() {
+		return beneficiaryId;
+	}
+	/**
+	 * @param beneficiaryId the beneficiaryId to set
+	 */
+	public void setBeneficiaryId(int beneficiaryId) {
+		this.beneficiaryId = beneficiaryId;
+	}
+	/**
+	 * @return the photoURL
+	 */
+	public String getPhotoURL() {
+		return photoURL;
+	}
+	/**
+	 * @param photoURL the photoURL to set
+	 */
+	public void setPhotoURL(String photoURL) {
+		this.photoURL = photoURL;
+	}
+	/**
+	 * @return the firstName
+	 */
+	public String getFirstName() {
+		return firstName;
+	}
+	/**
+	 * @param firstName the firstName to set
+	 */
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+	/**
+	 * @return the lastName
+	 */
+	public String getLastName() {
+		return lastName;
+	}
+	/**
+	 * @param lastName the lastName to set
+	 */
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+
+
+	/**
+	 * @return the family
+	 */
+	public Family getFamily() {
+		return family;
+	}
+
+
+
+	/**
+	 * @param family the family to set
+	 */
+	public void setFamily(Family family) {
+		this.family = family;
+	}
+
+
+
+}

@@ -1,0 +1,202 @@
+package first.endtoend.models;
+
+import java.io.Serializable;
+import java.util.Date;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import first.endtoend.references.ClassPersistable;
+import first.endtoend.references.FieldPersistable;
+import first.endtoend.references.FieldPersistable.Type;
+
+@ClassPersistable
+public class Trace implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@FieldPersistable(value=Type.PRIMARY_KEY, autoIncrement=true)
+	private int traceId;
+	
+	@Expose
+	@SerializedName("family")
+	private Family family;
+	
+	@Expose
+	@SerializedName("latitude")
+	@FieldPersistable
+	private double latitude;
+	
+	@Expose
+	@SerializedName("longitude")
+	@FieldPersistable
+	private double longitude; 
+	
+	@Expose
+	@SerializedName("precision")
+	@FieldPersistable
+	private float accuracy;
+	
+	@Expose
+	@SerializedName("tagId")
+	private String tagId;
+	
+	@FieldPersistable(value=Type.FOREIGN_KEY)
+	private RationCard rationCard;
+	
+	@Expose
+	@SerializedName("date")
+	@FieldPersistable
+	private Date date;
+	
+	@Expose
+	@SerializedName("photo")
+	@FieldPersistable
+	private String photo;
+
+    @Expose
+    @FieldPersistable
+    private long agentId;
+	
+	
+    public Trace() {
+	}
+
+	/**
+	 * @return the photo
+	 */
+	public String getPhoto() {
+		return photo;
+	}
+
+	/**
+	 * @param photo the photo to set
+	 */
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	/**
+	 * @return the date
+	 */
+	public Date getDate() {
+		return date;
+	}
+
+	/**
+	 * @param date the date to set
+	 */
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	/**
+	 * @return the tagId
+	 */
+	public String getTagId() {
+		return tagId;
+	}
+
+	/**
+	 * @param tagId the tagId to set
+	 */
+	public void setTagId(String tagId) {
+		this.tagId = tagId;
+	}
+
+	/**
+	 * @return the family
+	 */
+	public Family getFamily() {
+		return family;
+	}
+
+	/**
+	 * @param family the family to set
+	 */
+	public void setFamily(Family family) {
+		this.family = family;
+	}
+
+	/**
+	 * @return the latitude
+	 */
+	public double getLatitude() {
+		return latitude;
+	}
+
+	/**
+	 * @param latitude the latitude to set
+	 */
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	/**
+	 * @return the longitude
+	 */
+	public double getLongitude() {
+		return longitude;
+	}
+
+	/**
+	 * @param longitude the longitude to set
+	 */
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	/**
+	 * @return the accuracy
+	 */
+	public float getAccuracy() {
+		return accuracy;
+	}
+
+	/**
+	 * @param accuracy the accuracy to set
+	 */
+	public void setAccuracy(float accuracy) {
+		this.accuracy = accuracy;
+	}
+
+
+    public long getAgentId() {
+        return agentId;
+    }
+
+    public void setAgentId(long agentId) {
+        this.agentId = agentId;
+    }
+
+	/**
+	 * @return the transactionId
+	 */
+	public int getTraceId() {
+		return traceId;
+	}
+
+	/**
+	 * @param transactionId the transactionId to set
+	 */
+	public void setTraceId(int traceId) {
+		this.traceId = traceId;
+	}
+
+	/**
+	 * @return the rationCard
+	 */
+	public RationCard getRationCard() {
+		return rationCard;
+	}
+
+	/**
+	 * @param rationCard the rationCard to set
+	 */
+	public void setRationCard(RationCard rationCard) {
+		this.rationCard = rationCard;
+	}
+}

@@ -1,0 +1,33 @@
+package first.endtoend.utils;
+
+import java.lang.reflect.Type;
+import java.util.Date;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Edou
+ * Date: 1/26/12
+ * Time: 11:41 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class DateSerializer implements JsonSerializer<Object>
+{
+    public JsonElement serialize(Date date, Type typeOfT, JsonSerializationContext context)
+    {
+        return new JsonPrimitive("/Date(" + date.getTime() + ")/");
+    }
+
+    @Override
+	public JsonElement serialize(Object arg0, Type arg1,
+                                 JsonSerializationContext arg2) {
+
+        Date date = (Date) arg0;
+        return new JsonPrimitive("/Date(" + date.getTime() + ")/");
+    }
+}
+

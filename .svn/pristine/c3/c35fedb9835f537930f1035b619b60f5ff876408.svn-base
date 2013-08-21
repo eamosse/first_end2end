@@ -1,0 +1,15 @@
+package first.endtoend.facade;
+
+import android.content.Context;
+import first.endtoend.models.Product;
+import first.endtoend.references.AbstractFacade;
+
+public class ProductFacade extends AbstractFacade<Product> {
+
+	public ProductFacade(Context context)
+			throws Exception {
+		super(Product.class, context);
+	}
+
+	
+}

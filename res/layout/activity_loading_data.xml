@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color" >
+    
+    <TextView
+        android:id="@+id/agentName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="94dp"
+        android:text=""
+        android:fontFamily=""
+        android:textStyle="bold" />
+    
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/agentName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/first_logo"
+        android:src="@drawable/first_logo" />
+
+    <Button
+        android:id="@+id/loadBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/firstConnection"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="51dp"
+        android:background="@drawable/button"
+        android:text="@string/load_data" />
+
+    <TextView
+        android:id="@+id/firstConnection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="49dp"
+        android:gravity="center_horizontal"
+        android:fontFamily=""
+        android:textStyle="bold"
+        android:text="@string/firstConnexionText" />
+
+</RelativeLayout>

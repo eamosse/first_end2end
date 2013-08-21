@@ -1,0 +1,90 @@
+package first.endtoend.models;
+
+import java.io.Serializable;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import first.endtoend.references.ClassPersistable;
+import first.endtoend.references.FieldPersistable;
+import first.endtoend.references.ForeignKey;
+import first.endtoend.references.PrimaryKey;
+
+@ClassPersistable
+public class RationCard implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	@FieldPersistable
+	@PrimaryKey
+	@Expose
+	@SerializedName("id")
+	private int rationCardId;
+	
+	@FieldPersistable
+	@Expose
+	@SerializedName("tagId")
+	private String tagId;
+	
+	@FieldPersistable
+	@ForeignKey
+	private Family family;
+	
+	
+
+	public RationCard() {
+	}
+
+	public RationCard(int rationCardId,String tagId) {
+		this.rationCardId = rationCardId;
+		this.tagId = tagId;
+	}
+
+	/**
+	 * @return the rationCardId
+	 */
+	public int getRationCardId() {
+		return rationCardId;
+	}
+
+	/**
+	 * @param rationCardId the rationCardId to set
+	 */
+	public void setRationCardId(int rationCardId) {
+		this.rationCardId = rationCardId;
+	}
+
+	/**
+	 * @return the family
+	 */
+	public Family getFamily() {
+		return family;
+	}
+
+	/**
+	 * @param family the family to set
+	 */
+	public void setFamily(Family family) {
+		this.family = family;
+	}
+
+	/**
+	 * @return the tagId
+	 */
+	public String getTagId() {
+		return tagId;
+	}
+
+	/**
+	 * @param tagId the tagId to set
+	 */
+	public void setTagId(String tagId) {
+		this.tagId = tagId;
+	}
+	
+	
+
+}

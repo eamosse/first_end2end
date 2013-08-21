@@ -1,0 +1,17 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.PortfolioDetail;
+import first.endtoend.references.AbstractFacade;
+
+public class PortfolioDetailFacade extends AbstractFacade<PortfolioDetail> {
+
+	public PortfolioDetailFacade(Class<PortfolioDetail> entityClass,
+			Context context) throws IOException {
+		super(entityClass, context);
+	}
+
+	
+}

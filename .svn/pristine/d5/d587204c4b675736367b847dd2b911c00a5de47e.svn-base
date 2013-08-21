@@ -1,0 +1,15 @@
+package first.endtoend.facade;
+
+import android.content.Context;
+import first.endtoend.models.Trace;
+import first.endtoend.references.AbstractFacade;
+
+public class TraceFacade extends AbstractFacade<Trace> {
+
+	public TraceFacade(Context context)
+			throws Exception {
+		super(Trace.class, context);
+	}
+
+	
+}

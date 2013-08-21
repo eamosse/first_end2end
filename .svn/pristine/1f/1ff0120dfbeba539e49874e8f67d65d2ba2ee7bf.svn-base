@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+ <!--   <string name="url">http://192.168.0.138:8080/First-EndToEnd/</string>-->
+
+<string name="url">http://134.59.152.106/First-EndToEnd/</string> 
+
+    <string name="getData">webservice/family</string>
+    <string name="sendData">webservice/retrieveAid</string>
+    <string name="connexion">j_spring_security_check</string>
+    <string name="load_Families">webserviceAgent/families</string>
+    <string name="load_Categories">webserviceAgent/categories</string>
+    <string name="load_Aids">webserviceAgent/aids</string>
+    <string name="load_Products">webserviceAgent/products</string>
+    <string name="benefPhotosOnLine">benefPhotos/</string>
+    <string name="productPhotosOnLine">productPhotos/</string>
+    
+    <string name="benefPhotosOffLine">BenefPhotos/</string>
+    <string name="productPhotosOffLine">ProductPhotos/</string>
+    <color name="background_color">#F5F8F2</color>
+    <color name="text_color">#473C35</color>
+    <color name="layout_color">#4F555B</color>
+
+</resources>

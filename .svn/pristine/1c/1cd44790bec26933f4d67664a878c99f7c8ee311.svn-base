@@ -1,0 +1,16 @@
+package first.endtoend.facade;
+
+import android.content.Context;
+import first.endtoend.models.Family;
+import first.endtoend.references.AbstractFacade;
+
+public class FamilyFacade extends AbstractFacade<Family> {
+
+	public FamilyFacade(Context context)
+			throws Exception {
+		super(Family.class, context);
+	}
+	
+	
+
+}

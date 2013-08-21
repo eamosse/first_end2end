@@ -1,0 +1,203 @@
+
+package first.endtoend.models;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import first.endtoend.references.ClassPersistable;
+import first.endtoend.references.FieldPersistable;
+import first.endtoend.references.FieldPersistable.Type;
+
+@ClassPersistable
+public class Family implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Expose
+	@SerializedName("id")
+	@FieldPersistable(value=Type.PRIMARY_KEY)
+	private int familyId;
+	
+	@Expose (serialize=false)
+	@SerializedName("name")
+	@FieldPersistable
+	private String familyName;
+	
+	@Expose
+	private Portfolio portfolio;
+		
+	@Expose (serialize=false)
+	@SerializedName("beneficiaryList")
+	private ArrayList<Beneficiary> beneficiaries;
+
+	//The selected person for transaction
+	@Expose(deserialize=false, serialize=true)
+	@SerializedName("beneficiarySelected")
+	private Beneficiary beneficiarySelected;
+
+	@Expose (serialize=false)
+	private Address address;
+	
+	@Expose (serialize=false)
+	@SerializedName("telephone")
+	@FieldPersistable
+	private String phoneNumber;
+	
+	@Expose (serialize=false)
+	@FieldPersistable(value=Type.FOREIGN_KEY)
+	private Category category;
+	
+	@Expose
+	private RationCard rationCard;
+	
+
+	/**
+	 * Constructor without params
+	 */
+	public Family(){
+
+	}
+	
+	
+
+
+	public Family(int familyId, String familyName, String phoneNumber, Category category) {
+		super();
+		this.familyId = familyId;
+		this.familyName = familyName;
+		this.phoneNumber = phoneNumber;
+		this.category = category;
+	}
+
+
+
+
+	/**
+	 * @return the phoneNumber
+	 */
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	/**
+	 * @param phoneNumber the phoneNumber to set
+	 */
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	/**
+	 * @return the familyId
+	 */
+	public int getFamilyId() {
+		return familyId;
+	}
+
+	/**
+	 * @param familyId the familyId to set
+	 */
+	public void setFamilyId(int familyId) {
+		this.familyId = familyId;
+	}
+
+	/**
+	 * @return the familyName
+	 */
+	public String getFamilyName() {
+		return familyName;
+	}
+
+	/**
+	 * @param familyName the familyName to set
+	 */
+	public void setFamilyName(String familyName) {
+		this.familyName = familyName;
+	}
+
+	/**
+	 * @return the address
+	 */
+	public Address getAddress() {
+		return address;
+	}
+
+	/**
+	 * @param address the address to set
+	 */
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	/**
+	 * @return the portfolio
+	 */
+	public Portfolio getPortfolio() {
+		return portfolio;
+	}
+
+	/**
+	 * @param portfolio the portfolio to set
+	 */
+	public void setPortfolio(Portfolio portfolio) {
+		this.portfolio = portfolio;
+	}
+
+
+	public ArrayList<Beneficiary> getBeneficiaries() {
+		return beneficiaries;
+	}
+
+	public void setBeneficiaries(ArrayList<Beneficiary> beneficiaries) {
+		this.beneficiaries = beneficiaries;
+	}
+
+	/**
+	 * @return the beneficiarySelected
+	 */
+	public Beneficiary getBeneficiarySelected() {
+		return beneficiarySelected;
+	}
+
+	/**
+	 * @param beneficiarySelected the beneficiarySelected to set
+	 */
+	public void setBeneficiarySelected(Beneficiary beneficiarySelected) {
+		this.beneficiarySelected = beneficiarySelected;
+	}
+
+	/**
+	 * @return the category
+	 */
+	public Category getCategory() {
+		return category;
+	}
+
+	/**
+	 * @param category the category to set
+	 */
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+
+	/**
+	 * @return the rationCard
+	 */
+	public RationCard getRationCard() {
+		return rationCard;
+	}
+
+
+	/**
+	 * @param rationCard the rationCard to set
+	 */
+	public void setRationCard(RationCard rationCard) {
+		this.rationCard = rationCard;
+	}	
+	
+}

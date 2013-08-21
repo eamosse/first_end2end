@@ -1,0 +1,17 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.Beneficiary;
+import first.endtoend.references.AbstractFacade;
+
+public class BeneficiaryFacade extends AbstractFacade<Beneficiary> {
+
+	public BeneficiaryFacade(Class<Beneficiary> entityClass, Context context)
+			throws IOException {
+		super(entityClass, context);
+	}
+
+	
+}

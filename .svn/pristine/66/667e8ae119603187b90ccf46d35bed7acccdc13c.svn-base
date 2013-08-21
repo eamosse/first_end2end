@@ -1,0 +1,192 @@
+package first.endtoend.utils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.SocketTimeoutException;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.StatusLine;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.util.Log;
+
+public class RequestHelper {
+	static int timeoutConnection = 60000;
+	static int timeoutSocket = 60000;
+	static DefaultHttpClient agroClient ;
+
+	/**
+	 * Retrieve the response body from an http response
+	 *
+	 * @param httpResponse the http response
+	 * @return a string
+	 */
+	public static String getResponse(HttpResponse httpResponse) {
+		HttpEntity entity = httpResponse.getEntity();
+		String response = null;
+		if (entity != null) {
+			try {
+				InputStream instream = entity.getContent();
+				response = convertStreamToString(instream);
+				instream.close();
+			} catch (IOException e) {
+				Log.v("IOException", e.getMessage());
+			}
+		}
+		Log.v("HttpResponse", response);
+		return response;
+	}
+
+	/**
+	 * Close the connection
+	 * When we make a request, some ressources are been used; when the request is completely executed
+	 * we must free these ressources
+	 * @param agroClient
+	 */
+	public static void closeConnection(HttpClient httpclient) {
+		if (httpclient != null) {
+			// Close the connection to free used ressources
+			httpclient.getConnectionManager().shutdown();
+			httpclient = null;
+			Log.v("Http", "Close HttpClient");
+		}
+	}
+
+
+	/**
+	 * Convert a stream to string
+	 *
+	 * @param is the input stream
+	 * @return the inputstream as string
+	 */
+	private static String convertStreamToString(InputStream is) {
+		String line = "";
+		StringBuilder total = new StringBuilder();
+		// Wrap a BufferedReader around the InputStream
+		BufferedReader rd = new BufferedReader(new InputStreamReader(is));
+		// Read response until the end
+		try {
+			while ((line = rd.readLine()) != null) {
+				total.append(line);
+			}
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+
+		// Return full string
+		return total.toString();
+		/*
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return sb.toString();  */
+	}
+
+
+	/**
+	 * get the code status of an http response
+	 *
+	 * @param httpResponse the http response
+	 * @return the code of the http response
+	 */
+
+	public static int getResponseCode(HttpResponse httpResponse) {
+		StatusLine status = httpResponse.getStatusLine();
+		int code = status.getStatusCode();
+		Log.v("Code", "Voici le code " + code);
+		//Response Code 2XX : Success
+		if (Math.abs(code - 200) < 100)
+			code = 200;
+		//Response Code 4XX : Client Error
+		if (Math.abs(code - 400) < 100)
+			code = 400;
+		if (Math.abs(code - 500) < 100)
+			code = 500;
+		//Response Code 5XX : Server Error
+		Log.v("Code", "Voici le code " + code);
+		return code;
+	} 
+
+	public static HttpGet httpGetRequest(HttpClient httpclient, String url){
+		HttpGet request = new HttpGet(url);
+		request.setHeader("Accept", "application/json");
+		request.setHeader("Content-type", "application/json");
+		return request;
+	}
+
+	public static ResponseStatus postRequest( List<NameValuePair> nameValuePairs, String requestUrl) {
+		Log.v("Http Post url:", requestUrl);
+		ResponseStatus responseStatus;
+		int code = 400;
+		String message =null;
+		ResponseHandler<String> responseHandler = new BasicResponseHandler();
+		HttpPost postMethod = new HttpPost(requestUrl);
+		DefaultHttpClient agroClient = new DefaultHttpClient();
+		postMethod.addHeader("User-Agent", "first");
+		try {
+			postMethod.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			message = agroClient.execute(postMethod, responseHandler);
+			System.out.println(message);
+			code=Constant.REQUEST_OK;
+		} catch (SocketTimeoutException se) {
+			//Request Timeout
+			code =408;
+			//agroResponse.setCode(AgroConstant.AGROTRACKING_REQUEST_TIMEOUT);
+			Log.v("Request Timeout", "Time out");
+		}catch (UnsupportedEncodingException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			message = "Unable to synchronize with server, due to internal error!\nPlease contact the administrator";
+			Log.v("Request Error", e.getMessage());
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			message = "Unable to synchronize with server, due to internal error!\nPlease contact the administrator";
+			Log.v("Request Error", e.getMessage());
+		} catch (IOException e) {
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			message = "Unable to synchronize with server, due to internal error!\nPlease contact the administrator";
+			Log.v("Request Error", e.getMessage());
+			code = 409;
+		} catch (Exception e)
+		{
+			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			message = "Unable to synchronize with server, due to internal error!\nPlease contact the administrator";
+			Log.v("Request Error", "Error : " +e.getMessage());
+		}
+		finally
+		{
+
+			Log.v("Request",message);
+			closeConnection(agroClient) ;
+		}
+		responseStatus = new ResponseStatus(code, message);
+		return responseStatus;
+	}
+
+}

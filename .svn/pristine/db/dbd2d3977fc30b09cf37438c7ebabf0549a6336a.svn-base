@@ -1,0 +1,38 @@
+package first.endtoend.utils;
+
+
+public class Constant {
+	/**
+	 * Request Response Code
+	 */
+	public static final int REQUEST_OK = 200;
+	public static final int INTERNAL_ERROR = 500;
+	public static final int NOT_FOUND = 404;
+	public static final int MALFORMED_REQUEST = 400;
+	public static final int FAMILY_ERROR = 501;
+
+
+	/**
+	 * Spring Security login values
+	 */
+	public static final  String SPRING_SECURITY_USERNAME = "j_username";
+	public static final  String SPRING_SECURITY_PASSWORD = "j_password";
+	public static final  String SPRING_SECURITY_REMEMBER_ME = "_spring_security_remember_me";
+	public static final  String TRANSACTION_KEY = "Transaction";
+
+	/**
+	 *   Constant JSON KEY
+	 */
+
+	public static final  String RESPONSE_KEY = "Response";
+	public static final  String RESPONSE_CODE_KEY = "code";
+	public static final  String JSON_KEY = "JSON";
+	public static final  String STATUS_KEY = "Status";
+	public static final  String TAG_KEY = "tagnfc";
+	public static final String USER = "user";
+	public static final String FAMILY = "family";
+	public static final String LIST_CATEGORIES = "listCategories";
+	public static final String LIST_PRODUCTS = "listProducts";
+	public static final String LIST_AIDS = "listAids";
+	public static final String LIST_FAMILIES = "listFamilies";
+}

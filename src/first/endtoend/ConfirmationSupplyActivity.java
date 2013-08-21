@@ -1,0 +1,425 @@
+package first.endtoend;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONObject;
+
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
+
+import first.endtoend.adapters.ConfirmationAdapter;
+import first.endtoend.facades.PortfolioDetailFacade;
+import first.endtoend.facades.TraceDetailFacade;
+import first.endtoend.facades.TraceFacade;
+import first.endtoend.helpers.Constant;
+import first.endtoend.helpers.DialogHelper;
+import first.endtoend.helpers.InternetHelper;
+import first.endtoend.helpers.JsonHelper;
+import first.endtoend.models.PortfolioDetail;
+import first.endtoend.models.Trace;
+import first.endtoend.models.TraceDetail;
+
+
+public class ConfirmationSupplyActivity extends MyActivity implements LocationListener {
+
+	ImageView img;
+	String imageFilePath;
+	File imageFile;
+	String photo;
+	Trace trace;
+	TraceFacade trFacade;
+	TraceDetailFacade traceDetailFacade;
+	PortfolioDetailFacade pfdFacade;
+	AQuery aquery;
+
+	float accuracy;
+	double longitude, latitude;
+
+	ConfirmationAdapter adapter;
+	List<PortfolioDetail> productsSeleted;
+	Button completeBtn, backBtn;
+	private LocationManager lm;
+	@SuppressWarnings("unused")
+	private Location location;
+	public ProgressDialog progressDialog;
+	AlertDialog.Builder alert;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_confirmation);
+		progressDialog = new ProgressDialog(this);
+		aquery = new AQuery(this);
+
+		try {
+			trFacade = new TraceFacade(this);
+			traceDetailFacade = new TraceDetailFacade(this);
+			pfdFacade = new PortfolioDetailFacade(this);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		this.takePhoto();
+
+		//Displaying the name of the agent
+		TextView agentName = (TextView) findViewById(R.id.agentName);
+		agentName.setText("Agent : "+LoginActivity.user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
+
+
+		productsSeleted = BeneficiaryDetail.portfolio.getProductsSelected();
+
+		adapter = new ConfirmationAdapter(ConfirmationSupplyActivity.this, productsSeleted);
+		ListView listeview = (ListView) findViewById(R.id.listViewConfirm);
+		listeview.setAdapter(adapter);
+
+		completeBtn = (Button) findViewById(R.id.validBtnConfirm);
+		completeBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+
+				trace = new Trace(TagActivity.family.getBeneficiarySelected(), latitude, longitude, accuracy, new Date(System.currentTimeMillis()), photo, LoginActivity.user.getId());
+
+				if(trace.getPhoto() != null){
+					if((trace.getLatitude() == 0) || (trace.getLongitude() ==0)){
+						alert = new AlertDialog.Builder(ConfirmationSupplyActivity.this);
+						DialogHelper.showGPSSettingsDialog(ConfirmationSupplyActivity.this, alert, getString(R.string.location_failed_message1));
+					}
+					else{
+						processSupply();
+					}
+				}
+				else{
+					alert = new AlertDialog.Builder(ConfirmationSupplyActivity.this);
+					DialogHelper.showErrorDialog(alert, getString(R.string.warning), 
+							getString(R.string.no_photo_message));
+				}
+			}
+		});
+
+		backBtn = (Button) findViewById(R.id.backBtnConfirm);
+		backBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+			}
+		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		lm = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+		if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+			System.out.println(">>>>>>>>>>> Location Manager used for position : GPS Provider");
+			lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,this);
+		}else{
+			System.out.println(">>>>>>>>>>> Location Manager used for position : Network Provider");
+			lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0,this);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		lm.removeUpdates(this);
+	}
+
+	//decodes image and scales it to reduce memory consumption
+	public Bitmap decodeFile(File f){
+		try {
+			//Decode image size
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inJustDecodeBounds = true;
+			BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+
+			//The new size we want to scale to
+			final int REQUIRED_SIZE=70;
+
+			//Find the correct scale value. It should be the power of 2.
+			int width_tmp=o.outWidth, height_tmp=o.outHeight;
+			int scale=1;
+			while(true){
+				if(width_tmp/2<REQUIRED_SIZE || height_tmp/2<REQUIRED_SIZE)
+					break;
+				width_tmp/=2;
+				height_tmp/=2;
+				scale*=2;
+			}
+
+			//Decode with inSampleSize
+			BitmapFactory.Options o2 = new BitmapFactory.Options();
+			o2.inSampleSize=scale;
+			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+		} catch (FileNotFoundException e) {}
+		return null;
+	}
+
+
+	public void takePhoto() {
+		String tracePhotosPath = Environment.getExternalStorageDirectory().getAbsolutePath()
+				+File.separator+getString(R.string.tracePhotosOffLine);
+
+		File file = new File(tracePhotosPath);
+
+		if(file.mkdirs() || file.isDirectory()){
+			imageFilePath = tracePhotosPath+TagActivity.family.getFamilyName()+
+					"_"+Trace.class.getSimpleName()+System.currentTimeMillis()+".jpg";
+		}
+		else{
+			imageFilePath = Environment.getExternalStorageDirectory().getAbsolutePath()+TagActivity.family.getFamilyName()+
+					"_"+Trace.class.getSimpleName()+System.currentTimeMillis()+".jpg";
+		}
+
+		img = (ImageView) findViewById(R.id.photo);
+		img.setOnClickListener(new View.OnClickListener() {
+
+
+			@Override
+			public void onClick(View v) {
+				imageFile = new File(imageFilePath);
+				System.out.println(imageFile.toString());
+				Uri imageFileUri = Uri.fromFile(imageFile);
+				System.out.println(imageFileUri);
+				Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, imageFileUri);
+				System.out.println("heyyyyyyy"+imageFileUri);
+				startActivityForResult(intent, 0);
+
+			}
+		});
+	}
+
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch (requestCode) {
+		case 0:
+
+			if (resultCode == RESULT_OK) {
+				Bitmap bmp = decodeFile(imageFile);
+				Bitmap bmpcomp = Bitmap.createScaledBitmap(bmp, 150, 150, true);
+
+				// create a matrix object
+				Matrix matrix = new Matrix();
+				matrix.postRotate(90); // rotate of 90 degree in clock wise
+
+				// create a new bitmap from the original using the matrix to transform the result
+				Bitmap rotatedBitmap = Bitmap.createBitmap(bmpcomp, 0, 0,
+						bmpcomp.getWidth(), bmpcomp.getHeight(), matrix, true);
+				img.setImageBitmap(rotatedBitmap);
+
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				rotatedBitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+				byte[] b = baos.toByteArray();
+				photo = Base64.encodeToString(b, Base64.DEFAULT);
+
+			}
+			break;
+		}
+
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent intent = new Intent(ConfirmationSupplyActivity.this, SupplyActivity.class);
+		startActivity(intent);
+		finish();
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		this.location = location;
+		lm.removeUpdates(this);
+		latitude = location.getLatitude();
+		longitude = location.getLongitude();
+		accuracy = location.getAccuracy();
+
+
+	}
+
+
+	@Override
+	public void onProviderDisabled(String provider) {}
+
+
+	@Override
+	public void onProviderEnabled(String provider) {}
+
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+
+	public void processSupply(){
+		if(InternetHelper.isOnline(ConfirmationSupplyActivity.this)){
+			processSupplyOnline();
+		}
+		else{
+			processSupplyOffline();
+		}
+	}
+
+
+	public void processSupplyOffline(){
+
+		AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+			@Override
+			protected void onPreExecute() {
+				DialogHelper.showProcessingDialog(progressDialog, getString(R.string.sending),
+						getString(R.string.wait));	
+			}
+
+			@Override
+			protected Void doInBackground(Void... arg0) {
+				try {
+					trFacade.insert(trace);
+					for(PortfolioDetail pf : productsSeleted){
+						TraceDetail detail = new TraceDetail(trace, pf.getProduct(), pf.getQuantityWished());
+
+						trace.getTraceDetails().add(detail);
+
+						traceDetailFacade.insert(detail);
+
+						pf.setQuantity(pf.getQuantity() - pf.getQuantityWished());
+
+						pfdFacade.update(pf);
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+				}		
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void result) {
+				progressDialog.dismiss();
+				processSupplyFinishDialog();
+			}
+
+		};
+		task.execute((Void[])null);
+
+
+
+	}
+
+	public void processSupplyOnline() {
+
+		for(PortfolioDetail pf : productsSeleted){
+			TraceDetail detail = new TraceDetail(trace, pf.getProduct(), pf.getQuantityWished());
+			trace.getTraceDetails().add(detail);
+		}
+
+		JSONObject ob = JsonHelper.createJsonObject(trace);
+		String url = getString(R.string.url)+getString(R.string.syncTrace);
+
+		DialogHelper.showProcessingDialog(progressDialog, getString(R.string.sending), getString(R.string.wait));
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put(Constant.TRACE_KEY, ob.toString());	
+		aquery.progress(progressDialog).ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
+			@Override
+			public void callback(String url, JSONObject json, AjaxStatus status) {
+
+				switch (status.getCode()) {
+				case Constant.REQUEST_OK:
+
+					int code = JsonHelper.getResponseCodeFromJson(json.toString());
+
+					switch (code) {
+					case Constant.REQUEST_OK:
+						processSupplyFinishDialog();
+						for(PortfolioDetail pf : productsSeleted){
+							pf.setQuantity(pf.getQuantity() - pf.getQuantityWished());
+							try {
+								pfdFacade.update(pf);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+						Log.i("Trace Sync in App Confirmation Activity :", ""+trace.getTraceId());
+
+						break;
+					default:
+						processSupplyOffline();
+						System.out.println("Trace cannot be Sync right now in App Confirmation, Stored in local");
+						break;
+					}
+					break;
+				default:
+					processSupplyOffline();
+					Log.i("First Confirmation Activity ", "Trace "+ trace.getTraceId()  +" cannot be sync now! Stored in local and will be tried later on");
+					break;
+				}
+
+				try {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println(json);  
+			}
+		});
+	}
+
+	public void processSupplyFinishDialog() {
+		alert = new AlertDialog.Builder(ConfirmationSupplyActivity.this);
+		alert.setTitle(R.string.SuccessTransaction);
+		alert.setMessage(R.string.SuccessTransactionMessage);
+		alert.setIcon(R.drawable.successicon);
+		alert.setCancelable(false);
+		alert.setPositiveButton(R.string.start, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Intent intent = new Intent(ConfirmationSupplyActivity.this, TagActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		});
+		alert.setNegativeButton(R.string.quit, new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				DialogHelper.processingDisconnection(progressDialog, ConfirmationSupplyActivity.this);
+			}
+		});
+		alert.show();
+
+
+
+	}
+}

@@ -1,0 +1,18 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.Aid;
+import first.endtoend.references.AbstractFacade;
+
+public class AidFacade extends AbstractFacade<Aid> {
+
+	public AidFacade(Class<Aid> entityClass, Context context)
+			throws IOException {
+		super(entityClass, context);
+	}
+	
+	
+
+}

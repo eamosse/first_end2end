@@ -1,0 +1,16 @@
+package first.endtoend.facade;
+
+import java.io.IOException;
+
+import android.content.Context;
+import first.endtoend.models.RationCard;
+import first.endtoend.references.AbstractFacade;
+
+public class RationCardFacade extends AbstractFacade<RationCard> {
+
+	public RationCardFacade(Class<RationCard> entityClass, Context context)
+			throws IOException {
+		super(entityClass, context);
+	}
+
+}

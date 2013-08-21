@@ -1,0 +1,34 @@
+package first.endtoend.utils;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteException;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+
+public class FirstSQLiteOpenHelper extends SQLiteOpenHelper {
+
+	public FirstSQLiteOpenHelper(Context context, String name, CursorFactory factory,int version) {
+		super(context, name, factory, version);
+		Log.v("DataBase", "creating database "+name);
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase dataBase) {
+		try{
+			Log.v("Create tables ", "creating all tables");		
+		}
+		catch(SQLiteException ex){
+			Log.v("Create table exception", ex.getMessage());
+		}
+
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase dataBase, int oldVersion, int newVersion) {
+		Log.w("DataBaseOpenHelper", "Upgrading from version "+oldVersion+" to "+newVersion+", which will destroy all old data");
+		onCreate(dataBase);
+
+	}
+}

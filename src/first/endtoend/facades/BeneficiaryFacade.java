@@ -1,0 +1,14 @@
+package first.endtoend.facades;
+
+import android.content.Context;
+import first.endtoend.models.Beneficiary;
+import first.endtoend.sqliteHelpers.AbstractFacade;
+
+public class BeneficiaryFacade extends AbstractFacade<Beneficiary> {
+
+	public BeneficiaryFacade(Context context){
+		super(Beneficiary.class, context);
+	}
+
+	
+}

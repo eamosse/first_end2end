@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:fillViewport="true" >
+
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/background_color"
+    android:orientation="vertical" >
+    
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/agentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="94dp"
+            android:text=""
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/beneficiarydetail"
+        android:layout_width="fill_parent"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:textSize="25sp"
+        android:fontFamily=""
+        android:text="@string/beneficiarydetail"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+   
+
+        <ImageView
+            android:id="@+id/beneficiaryImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/beneficiaryImage"
+            android:layout_gravity="center"
+            android:src="@drawable/personicon" />
+    
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvfirstName"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/firstname"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/valuefirstName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvlastName"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/lastname"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/valuelastName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvadresse"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/address"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/valueaddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left"
+            android:text=""
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/tvphone"
+            android:layout_width="112dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="@string/phone"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/valuephone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+   
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/backBtn"
+            style="@android:style/Animation"
+            android:layout_width="150dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/backBtn" />
+
+        <Button
+            android:id="@+id/nextBtn"
+            style="@android:style/Animation"
+            android:layout_width="150dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@drawable/button"
+            android:text="@string/nextBtn" />
+    </LinearLayout>
+
+</LinearLayout>
+</ScrollView>

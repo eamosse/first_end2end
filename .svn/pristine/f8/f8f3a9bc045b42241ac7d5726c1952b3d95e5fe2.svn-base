@@ -1,0 +1,14 @@
+package first.endtoend.facade;
+
+import android.content.Context;
+import first.endtoend.models.PortfolioDetail;
+import first.endtoend.references.AbstractFacade;
+
+public class PortfolioDetailFacade extends AbstractFacade<PortfolioDetail> {
+
+	public PortfolioDetailFacade(Context context) throws Exception {
+		super(PortfolioDetail.class, context);
+	}
+
+	
+}

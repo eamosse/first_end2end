@@ -1,0 +1,14 @@
+package first.endtoend.facade;
+
+import android.content.Context;
+import first.endtoend.models.Category;
+import first.endtoend.references.AbstractFacade;
+
+public class CategoryFacade extends AbstractFacade<Category> {
+
+	public CategoryFacade(Context context)
+			throws Exception {
+		super(Category.class, context);
+	}
+
+}

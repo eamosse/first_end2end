@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="@color/layout_color"
+    android:baselineAligned="true"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/productImageSupply"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="2dp"
+        android:contentDescription="@string/gridImage"
+        android:scaleType="centerCrop"
+        android:src="@drawable/icon" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:baselineAligned="true"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/productNameSupply"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="@color/background_color"
+            android:textStyle="bold" />
+       
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:baselineAligned="true"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:id="@+id/quantityWishedSupply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/supplyQuantity"
+            android:textColor="@color/background_color"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/quantityWished"
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.08"
+            android:ems="15"
+            android:textColor="@color/background_color"
+            android:inputType="numberDecimal" >
+
+            <requestFocus />
+        </EditText>
+
+        <TextView
+            android:id="@+id/productUnitySupply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="" 
+            android:textColor="@color/background_color"/>
+        
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" 
+        />
+
+</LinearLayout>

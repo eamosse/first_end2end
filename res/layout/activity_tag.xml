@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget43"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/background_color" >
+
+    <TextView
+        android:id="@+id/agentName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="94dp"
+        android:text=""
+        android:fontFamily=""
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/agentName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/first_logo"
+        android:src="@drawable/first_logo" />
+
+    <TextView
+        android:id="@+id/widget27"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="@string/tagText"
+        android:textSize="45sp" />
+
+    <ImageView
+        android:id="@+id/tagpump"
+        android:layout_width="320dp"
+        android:layout_height="106dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/widget27"
+        android:contentDescription="@string/tagImage"
+        android:src="@drawable/touchpumptag" />
+
+</RelativeLayout>

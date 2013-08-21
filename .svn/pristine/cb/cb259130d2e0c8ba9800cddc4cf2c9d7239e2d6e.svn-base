@@ -1,0 +1,14 @@
+package first.endtoend.utils;
+
+public class ResponseStatus {
+	
+	public int codeReceived;
+	public String messageReceived;
+
+	public ResponseStatus(){}
+	
+	public ResponseStatus(int codeReceived, String messageReceived){
+		this.codeReceived = codeReceived;
+		this.messageReceived = messageReceived;
+	}
+}

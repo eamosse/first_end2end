@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--  <string name="url">http://134.59.152.106/First-EndToEnd/</string>-->
+    <string name="url">http://192.168.137.49:8080/First-EndToEnd/</string>
+    <string name="syncTrace">webservice/retrieveAid</string>
+    <string name="connexion">j_spring_security_check</string>
+    <string name="load_Families">webserviceAgent/families</string>
+    <string name="load_Family">webserviceAgent/family</string>
+    <string name="load_Categories">webserviceAgent/categories</string>
+    <string name="load_Aids">webserviceAgent/aids</string>
+    <string name="load_Aid">webserviceAgent/aid</string>
+    <string name="load_Products">webserviceAgent/products</string>
+    <string name="load_Product">webserviceAgent/product</string>
+    <string name="benefPhotosOnLine">benefPhotos/</string>
+    <string name="productPhotosOnLine">productPhotos/</string>
+    <string name="benefPhotosOffLine">BenefPhotos/</string>
+    <string name="productPhotosOffLine">ProductPhotos/</string>
+    <string name="tracePhotosOffLine">TracePhotos/</string>
+    <string name="sendRegId">webserviceAgent/getRegId</string>
+
+</resources>
