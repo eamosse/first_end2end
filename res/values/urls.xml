@@ -2,7 +2,7 @@
 <resources>
 
     <!--  <string name="url">http://134.59.152.106/First-EndToEnd/</string>-->
-    <string name="url">http://192.168.137.49:8080/First-EndToEnd/</string>
+    <string name="url">http://192.168.43.121:8080/First-EndToEnd/</string>
     <string name="syncTrace">webservice/retrieveAid</string>
     <string name="connexion">j_spring_security_check</string>
     <string name="load_Families">webserviceAgent/families</string>

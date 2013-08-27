@@ -10,7 +10,7 @@ import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class TraceFacade extends AbstractFacade<Trace> {
 
-	public TraceFacade(Context context) throws Exception {
+	public TraceFacade(Context context){
 		super(Trace.class, context);
 	}
 	

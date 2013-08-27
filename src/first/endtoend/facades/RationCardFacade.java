@@ -7,8 +7,7 @@ import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class RationCardFacade extends AbstractFacade<RationCard> {
 
-	public RationCardFacade(Context context)
-			throws Exception {
+	public RationCardFacade(Context context){
 		super(RationCard.class, context);
 	}
 	

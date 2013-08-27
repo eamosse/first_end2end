@@ -6,8 +6,7 @@ import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class PortfolioFacade extends AbstractFacade<Portfolio> {
 
-	public PortfolioFacade(Context context)
-			throws Exception {
+	public PortfolioFacade(Context context){
 		super(Portfolio.class, context);
 	}
 	

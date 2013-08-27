@@ -56,20 +56,16 @@ import first.endtoend.models.PortfolioDetail;
 import first.endtoend.models.Product;
 import first.endtoend.models.RationCard;
 import fr.unice.mbds.nfc.library.ApduError;
-import fr.unice.mbds.nfc.library.NfcController;
 
 public class LoginActivity extends MyActivity {
-	String username, password, message;
-	public String messageReceived;
+	String username, password, message,regId, usernameStored, passwordStored;
 	public static FIAgent user;
 	public static List<Cookie> cookies;
 	AlertDialog.Builder alert;
 	SharedPreferences settings;
 	String PREF_NAME = "my_pref_settings";
 	ProgressDialog dialog;
-	String regId;
 	Boolean hasRun;
-	String usernameStored, passwordStored;
 
 	CategoryFacade categoryFacade;
 	ProductFacade productFacade;
@@ -89,22 +85,18 @@ public class LoginActivity extends MyActivity {
 		dialog = new ProgressDialog(this);
 		aquery = new AQuery(this);
 		settings = getSharedPreferences(PREF_NAME, 0); // load the preferences
-		hasRun = settings.getBoolean("hasRun", false); // see if it's run
-		// before, default no
+		hasRun = settings.getBoolean("hasRun", false); // see if it's run before, default no		
+		
+		categoryFacade = new CategoryFacade(this);
+		productFacade = new ProductFacade(this);
+		aidFacade = new AidFacade(this);
+		familyFacade = new FamilyFacade(this);
+		beneficiaryFacade = new BeneficiaryFacade(this);
+		portfolioFacade = new PortfolioFacade(this);
+		portfolioDetailFacade = new PortfolioDetailFacade(this);
+		addressFacade = new AddressFacade(this);
+		rationCardFacade = new RationCardFacade(this);
 
-		try {
-			categoryFacade = new CategoryFacade(this);
-			productFacade = new ProductFacade(this);
-			aidFacade = new AidFacade(this);
-			familyFacade = new FamilyFacade(this);
-			beneficiaryFacade = new BeneficiaryFacade(this);
-			portfolioFacade = new PortfolioFacade(this);
-			portfolioDetailFacade = new PortfolioDetailFacade(this);
-			addressFacade = new AddressFacade(this);
-			rationCardFacade = new RationCardFacade(this);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		Button connexion = (Button) findViewById(R.id.boutonConnexion);
 		connexion.setOnClickListener(new OnClickListener() {
@@ -119,41 +111,40 @@ public class LoginActivity extends MyActivity {
 				if ((username.equals("")) && (password.equals(""))) {
 					Toast.makeText(LoginActivity.this, R.string.fill,
 							Toast.LENGTH_SHORT).show();
+
 				} else {
-
-					if (!hasRun) {
-						// code for if this is the first time the app has run
-						String url = getString(R.string.url)
-								+ getString(R.string.connexion);
-
-						if (InternetHelper.isOnline(LoginActivity.this)) {
-							async_post(url, true, false, username, password);
+					if(areSEAndAppletPresents)
+						ctrl.execute("select " + Constant.INS_GET_PASSWORD
+								+ "," + Constant.INS_GET_USERNAME
+								+ " from ", Constant.GET_LOGIN_INFO_CODE);
+					else{
+						if (!hasRun) {
+							loginOnServer();
 						} else {
-							alert = new AlertDialog.Builder(LoginActivity.this);
-							showInternetErrorDialog(0);
+							// code if the app HAS run before	
+							usernameStored = settings.getString("username", "");
+							passwordStored = settings.getString("password", "");
+							checkLoginAndPassword();
 						}
-					} else {
-						// code if the app HAS run before
-						if (ctrl.isServiceConnected())
-							ctrl.sendApdu("select " + Constant.INS_GET_PASSWORD
-									+ "," + Constant.INS_GET_USERNAME
-									+ " from ");
-						else {
-							//init();
-						}
-
 					}
 				}
 			}
 		});
 	}
 
-	// @Override
-	// protected void onResume() {
-	// super.onResume();
-	// if(!ctrl.isServiceConnected())
-	// ctrl = new NfcController(this, this);
-	// }
+	private void loginOnServer() {
+		// code for if this is the first time the app has run
+		String url = getString(R.string.url)
+				+ getString(R.string.connexion);
+
+		if (InternetHelper.isOnline(LoginActivity.this)) {
+			async_post(url, true, false, username, password);
+		} else {
+			alert = new AlertDialog.Builder(LoginActivity.this);
+			showInternetErrorDialog(0);
+		}
+	}
+
 
 	@Override
 	public void onBackPressed() {
@@ -161,18 +152,18 @@ public class LoginActivity extends MyActivity {
 		alert.setMessage(getString(R.string.quitconfirm));
 		alert.setPositiveButton(R.string.yes,
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dlg, int sumthin) {
-						finish();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dlg, int sumthin) {
+				finish();
+			}
+		});
 		alert.setNegativeButton(R.string.no,
 				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		alert.show();
 	}
 
@@ -190,6 +181,7 @@ public class LoginActivity extends MyActivity {
 
 		DialogHelper.showProcessingDialog(dialog, getString(R.string.login),
 				getString(R.string.wait));
+
 
 		try {
 			Map<String, Object> params = new HashMap<String, Object>();
@@ -231,32 +223,27 @@ public class LoginActivity extends MyActivity {
 							break;
 
 						case Constant.NOT_FOUND:
-							// alert = new
-							// AlertDialog.Builder(LoginActivity.this);
-							showErrorDialog(getString(R.string.wrong), 0);
-							// DialogHelper.showErrorDialog(alert,getString(R.string.error),
-							// getString(R.string.wrong));
+							showErrorDialog(getString(R.string.wrong), 0);							
 							break;
 						}
 						break;
 
 					default: // Request http failed
-						// alert = new AlertDialog.Builder(LoginActivity.this);
+
 						String msg = getString(R.string.code_404) + " "
 								+ getString(R.string.request_not_received);
 						showErrorDialog(msg, 0);
-						// DialogHelper.showErrorDialog(alert,
-						// getString(R.string.code_404),getString(R.string.request_not_received));
 						break;
 					}
 					cookies = status.getCookies();
 				}
 			};
 			cb.header("X-Requested-With", "true");
+
 			aquery.progress(dialog).ajax(url, params, String.class, cb);
+
 		} catch (Exception e) {
 			e.printStackTrace(); // To change body of catch statement use File |
-			// Settings | File Templates.
 		}
 	}
 
@@ -291,85 +278,61 @@ public class LoginActivity extends MyActivity {
 
 			aquery.progress(dialog).ajax(url, params, JSONObject.class,
 					new AjaxCallback<JSONObject>() {
-						@Override
-						public void callback(String url, JSONObject object,
-								AjaxStatus status) {
-							switch (status.getCode()) {
-							case Constant.REQUEST_OK:
+				@Override
+				public void callback(String url, JSONObject object,
+						AjaxStatus status) {
+					switch (status.getCode()) {
+					case Constant.REQUEST_OK:
 
-								int code = JsonHelper
-										.getResponseCodeFromJson(object);
-								System.out
-										.println("SendRegId Response code is :"
-												+ code);
-								switch (code) {
-								case Constant.REQUEST_OK:
+						int code = JsonHelper
+						.getResponseCodeFromJson(object);
+						System.out
+						.println("SendRegId Response code is :"
+								+ code);
+						switch (code) {
+						case Constant.REQUEST_OK:
 
-									SharedPreferences.Editor edit = settings
-											.edit();
-									// Storing the user agent data
-									edit.putInt("agentId", user.getId());
-//									String command = "insert into applet ("
-//											+ Constant.INS_SET_USERNAME + ","
-//											+ Constant.INS_SET_PASSWORD
-//											+ ") values (" + username + ","
-//											+ password + ")";
-//									
-									edit.putString("firstName",
-											user.getFirstName());
-									edit.putString("lastName",
-											user.getLastName());
-									edit.putString("sessionId",
-											user.getSessionId());
-									edit.putBoolean("hasRun", true); // set to
-									// has
-									// run
-									edit.commit(); // apply
-									String command = "insert into applet ("
-											+ Constant.INS_SET_PASSWORD+ ") values (" + password + ")";
-									
-									ctrl.sendApdu(command);
-									
+							storeUser();
 
-									alert = new AlertDialog.Builder(
-											LoginActivity.this)
-											.setTitle(R.string.information)
-											.setIcon(R.drawable.successicon)
-											.setMessage(
-													R.string.load_successfully)
-											.setPositiveButton(
-													R.string.ok,
-													new DialogInterface.OnClickListener() {
-														@Override
-														public void onClick(
-																DialogInterface dialog,
-																int which) {
-															Intent intent = new Intent(
-																	LoginActivity.this,
-																	TagActivity.class);
-															startActivity(intent);
-															finish();
-														}
-													});
-									alert.show();
-									break;
+							alert = new AlertDialog.Builder(
+									LoginActivity.this)
+							.setTitle(R.string.information)
+							.setIcon(R.drawable.successicon)
+							.setMessage(
+									R.string.load_successfully)
+									.setPositiveButton(
+											R.string.ok,
+											new DialogInterface.OnClickListener() {
+												@Override
+												public void onClick(
+														DialogInterface dialog,
+														int which) {
+													Intent intent = new Intent(
+															LoginActivity.this,
+															TagActivity.class);
+													startActivity(intent);
+													finish();
+												}
+											});
+							alert.show();
+							break;
 
-								default:
-									message = getString(R.string.error_while_sending)
-											+ " " + Constant.REG_ID;
-									showErrorDialog(message, 1);
-									break;
-								}
-								break;
-
-							default:
-								message = getString(R.string.error_while_sending)
-										+ " " + Constant.REG_ID;
-								showErrorDialog(message, 1);
-								break;
-							}
+						default:
+							message = getString(R.string.error_while_sending)
+							+ " " + Constant.REG_ID;
+							showErrorDialog(message, 1);
+							break;
 						}
-					}.cookie(cookieName, cookieValue));
+						break;
+
+					default:
+						message = getString(R.string.error_while_sending)
+						+ " " + Constant.REG_ID;
+						showErrorDialog(message, 1);
+						break;
+					}
+				}
+			}.cookie(cookieName, cookieValue));
 		} else {
 			showInternetErrorDialog(1);
 		}
@@ -408,13 +371,13 @@ public class LoginActivity extends MyActivity {
 									}
 
 							System.out
-									.println("<<<<>>>> End Loading Categories");
+							.println("<<<<>>>> End Loading Categories");
 							load_products();
 							break;
 
 						default:
 							message = getString(R.string.error_while_loading)
-									+ " " + Constant.LIST_CATEGORIES;
+							+ " " + Constant.LIST_CATEGORIES;
 							showErrorDialog(message, 2);
 							break;
 						}
@@ -478,13 +441,13 @@ public class LoginActivity extends MyActivity {
 												+ p.getIconeURL();
 										File file = new File(
 												Environment
-														.getExternalStorageDirectory(),
+												.getExternalStorageDirectory(),
 												path);
 
 										if (!file.exists()) {
 											download(
 													getString(R.string.url)
-															+ getString(R.string.productPhotosOnLine),
+													+ getString(R.string.productPhotosOnLine),
 													p.getIconeURL(),
 													getString(R.string.productPhotosOffLine));
 										}
@@ -492,13 +455,13 @@ public class LoginActivity extends MyActivity {
 										e.printStackTrace();
 									}
 							System.out
-									.println(">>>>>>>>>>>  End Loading Product<<<<<<<<<<<<");
+							.println(">>>>>>>>>>>  End Loading Product<<<<<<<<<<<<");
 							load_aids();
 							break;
 
 						default:
 							message = getString(R.string.error_while_loading)
-									+ " " + Constant.LIST_PRODUCTS;
+							+ " " + Constant.LIST_PRODUCTS;
 							showErrorDialog(message, 3);
 							break;
 						}
@@ -557,19 +520,19 @@ public class LoginActivity extends MyActivity {
 										e.printStackTrace();
 									}
 							System.out
-									.println(">>>>>> End Loading Aids >>>>>><<<<<<<");
+							.println(">>>>>> End Loading Aids >>>>>><<<<<<<");
 							load_families();
 							break;
 
 						case Constant.NULL_RESPONSE:
 							System.out
-									.println("LoginActivity Load aids : No Aids yet");
+							.println("LoginActivity Load aids : No Aids yet");
 							load_families();
 							break;
 
 						default:
 							message = getString(R.string.error_while_loading)
-									+ " " + Constant.LIST_AIDS;
+							+ " " + Constant.LIST_AIDS;
 							showErrorDialog(message, 4);
 							break;
 						}
@@ -635,12 +598,12 @@ public class LoginActivity extends MyActivity {
 													+ fib.getPhotoURL();
 											File file = new File(
 													Environment
-															.getExternalStorageDirectory(),
+													.getExternalStorageDirectory(),
 													path);
 											if (!file.exists()) {
 												download(
 														getString(R.string.url)
-																+ getString(R.string.benefPhotosOnLine),
+														+ getString(R.string.benefPhotosOnLine),
 														fib.getPhotoURL(),
 														getString(R.string.benefPhotosOffLine));
 											}
@@ -655,7 +618,7 @@ public class LoginActivity extends MyActivity {
 													.getDetails()) {
 												pfd.setPortfolio(p);
 												portfolioDetailFacade
-														.insert(pfd);
+												.insert(pfd);
 											}
 										}
 
@@ -675,20 +638,20 @@ public class LoginActivity extends MyActivity {
 									}
 								}
 							System.out
-									.println(">>>>>>>> End Loading all Families <<<<<<<<<<");
+							.println(">>>>>>>> End Loading all Families <<<<<<<<<<");
 							sendRegId();
 							break;
 
 						case Constant.NULL_RESPONSE:
 							System.out
-									.println("LoginActivity load families : No Families yet!");
+							.println("LoginActivity load families : No Families yet!");
 							sendRegId();
 
 							break;
 
 						default:
 							message = getString(R.string.error_while_loading)
-									+ " " + Constant.LIST_FAMILIES;
+							+ " " + Constant.LIST_FAMILIES;
 							showErrorDialog(message, 5);
 							break;
 						}
@@ -739,42 +702,19 @@ public class LoginActivity extends MyActivity {
 		alert.setTitle(R.string.internet_error);
 		alert.setIcon(android.R.drawable.ic_dialog_alert);
 		alert.setMessage(R.string.internet_error_message);
-		alert.setPositiveButton(R.string.settings,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						LoginActivity.this.startActivity(new Intent(
-								Settings.ACTION_SETTINGS));
-					}
-				});
-		alert.setNegativeButton(R.string.retry,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch (action) {
-						case 0:
-							async_post(getString(R.string.url)
-									+ getString(R.string.connexion), true,
-									false, username, password);
-							break;
-						case 1:
-							sendRegId();
-							break;
-						case 2:
-							load_categories();
-							break;
-						case 3:
-							load_products();
-							break;
-						case 4:
-							load_aids();
-							break;
-						case 5:
-							load_families();
-							break;
-						}
-					}
-				});
+		alert.setPositiveButton(R.string.settings,new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				LoginActivity.this.startActivity(new Intent(
+						Settings.ACTION_WIFI_SETTINGS));
+			}
+		});
+		alert.setNegativeButton(R.string.retry,	new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				actionToDoWhenErrorOccurs(action);
+			}
+		});
 		alert.show();
 	}
 
@@ -789,110 +729,104 @@ public class LoginActivity extends MyActivity {
 		alert.setIcon(android.R.drawable.ic_delete);
 		alert.setTitle(R.string.error);
 		alert.setMessage(message);
-		alert.setPositiveButton(R.string.retry,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						switch (action) {
-						case 0:
-							async_post(getString(R.string.url)
-									+ getString(R.string.connexion), true,
-									false, username, password);
-							break;
-						case 1:
-							sendRegId();
-							break;
-						case 2:
-							load_categories();
-							break;
-						case 3:
-							load_products();
-							break;
-						case 4:
-							load_aids();
-							break;
-						case 5:
-							load_families();
-							break;
-						}
-					}
-				});
-		alert.setNegativeButton(R.string.close,
-				new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+		alert.setPositiveButton(R.string.retry,	new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				actionToDoWhenErrorOccurs(action);
+			}
+		});
+		alert.setNegativeButton(R.string.close,	new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
 		alert.show();
 	}
 
 	@Override
-	protected void onStop() {
-		super.onStop();
-		//ctrl.destroy();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-		// if(!ctrl.isServiceConnected())
-		// ctrl=new NfcController(this, this);
-	}
-
-	@Override
 	public void onAPDUError(ApduError error) {
-		// TODO handle errors
 		Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
 		System.out.println("error code " + error.getApduError()[0]);
 	}
 
 	@Override
 	public void onConnected() {
-		if (hasRun) {
-			ctrl.sendApdu("select " + Constant.INS_GET_PASSWORD + ","
-					+ Constant.INS_GET_USERNAME + " from ");
-		}
-
 	}
 
 	@Override
-	public void onResponse(String[] response) {
-		if(response.length>= 2) {
-		usernameStored = response[0];
-		passwordStored = response[1];
-		
-		System.out.println(usernameStored+"--- "+passwordStored);
-		if (username != null) {
-
-			String firstNameStored = settings.getString("firstName", "");
-			String lastNameStored = settings.getString("lastName", "");
-			String sessionIdStored = settings.getString("sessionId", "");
-			int agentIdStored = settings.getInt("agentId", 0);
-
-			if (username.equals(usernameStored)
-					&& password.equals(passwordStored)) {
-
-				user = new FIAgent(agentIdStored, firstNameStored,
-						lastNameStored, usernameStored, passwordStored,
-						sessionIdStored);
-				Intent intent = new Intent(LoginActivity.this,
-						TagActivity.class);
-				startActivity(intent);
-				finish();
-			} else {
-
-				alert = new AlertDialog.Builder(LoginActivity.this);
-				DialogHelper.showErrorDialog(alert, getString(R.string.error),
-						getString(R.string.wrong));
-
+	public void onResponse(String[] response, int commandId) {
+		switch (commandId) {
+		case Constant.GET_LOGIN_INFO_CODE:
+			if(response.length>= 2) {
+				if (!hasRun) {
+					loginOnServer();
+				} else {
+					usernameStored = response[0];
+					passwordStored = response[1];
+					checkLoginAndPassword();
+				}
 			}
-			for (String s : response) {
-				System.out.println("Your answer : " + s);
-			}
+			break;
 		}
-
 	}
+
+
+	private FIAgent retrieveUserStored() {		
+		String firstNameStored = settings.getString("firstName", "");
+		String lastNameStored = settings.getString("lastName", "");
+		String sessionIdStored = settings.getString("sessionId", "");
+		int agentIdStored = settings.getInt("agentId", 0);
+		return new FIAgent(agentIdStored, firstNameStored,
+				lastNameStored, usernameStored, passwordStored,
+				sessionIdStored);
+	}
+
+
+	private void checkLoginAndPassword(){
+		if (username.equals(usernameStored)	&& password.equals(passwordStored)) {
+			user = retrieveUserStored();
+			Intent intent = new Intent(LoginActivity.this,TagActivity.class);
+			startActivity(intent);
+			finish();
+		} else {
+			alert = new AlertDialog.Builder(LoginActivity.this);
+			DialogHelper.showErrorDialog(alert, getString(R.string.error),
+					getString(R.string.wrong));
+		}
+	}
+
+	private void storeUser() {
+		SharedPreferences.Editor edit = settings.edit();
+		// Storing the user agent data
+		edit.putInt("agentId", user.getId());								
+		edit.putString("firstName",	user.getFirstName());
+		edit.putString("lastName",user.getLastName());
+		edit.putString("sessionId",user.getSessionId());
+		edit.putBoolean("hasRun", true); // set to hasrun
+		if(!areSEAndAppletPresents){
+			edit.putString("username", user.getUsername());
+			edit.putString("password", password);
+		}
+		edit.commit(); // apply	
+	}
+
+	public void actionToDoWhenErrorOccurs(int action){
+		switch (action) {
+		case 0:
+			if(InternetHelper.isOnline(LoginActivity.this)){
+				async_post(getString(R.string.url)
+						+ getString(R.string.connexion), true,
+						false, username, password);
+			}else{
+				showInternetErrorDialog(0);
+			}
+			break;
+		case 1: sendRegId(); break;
+		case 2:	load_categories(); break;
+		case 3:	load_products(); break;
+		case 4: load_aids(); break;
+		case 5: load_families(); break;
+		}
 	}
 }

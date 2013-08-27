@@ -1,10 +1,5 @@
 package first.endtoend;
 
-import first.endtoend.helpers.Constant;
-import fr.unice.mbds.nfc.library.ApduCallBack;
-import fr.unice.mbds.nfc.library.ApduCommand;
-import fr.unice.mbds.nfc.library.ApduError;
-import fr.unice.mbds.nfc.library.NfcController;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -13,9 +8,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+import fr.unice.mbds.nfc.library.ApduCallBack;
+import fr.unice.mbds.nfc.library.ApduError;
+import fr.unice.mbds.nfc.library.NfcController;
 
 public class MyActivity extends Activity implements ApduCallBack{
 
+	protected boolean areSEAndAppletPresents;
 	
 	protected NfcController ctrl;
 
@@ -24,6 +23,7 @@ public class MyActivity extends Activity implements ApduCallBack{
 		super.onCreate(savedInstanceState);
 		MyApplication act = (MyApplication)getApplication(); 
 	    ctrl = act.getController();
+	    areSEAndAppletPresents = act.areSEAndAppletPresents;
 	    
 	    
 	}
@@ -95,17 +95,6 @@ public class MyActivity extends Activity implements ApduCallBack{
 	@Override
 	public void onNoSecureElement() {
 		// TODO Auto-generated method stub
-//		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-//		alert.setMessage("No SE, App cannot run");
-//		alert.setCancelable(false);
-//		alert.setPositiveButton("leave App", new DialogInterface.OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				dialog.dismiss();
-//				finish();
-//			}
-//		});
-//		alert.show();
 	}
 
 	@Override
@@ -115,10 +104,6 @@ public class MyActivity extends Activity implements ApduCallBack{
 		System.out.println("error code "+error.getApduError()[0]);
 		
 		
-	}
-
-	@Override
-	public void onResponse(String response) {		
 	}
 
 	@Override
@@ -165,14 +150,15 @@ public class MyActivity extends Activity implements ApduCallBack{
 	}
 
 	@Override
-	public void onResponse(String[] response) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public void onPINRequired() {
 		// TODO Auto-generated method stub
 		startActivity(new Intent(this, PinEntryView.class));
+	}
+
+	@Override
+	public void onResponse(String[] response, int commandId) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

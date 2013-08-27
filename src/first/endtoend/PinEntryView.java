@@ -1,16 +1,5 @@
 package first.endtoend;
 
-/*Client ID: 	381130279932.apps.googleusercontent.com
-Redirect URIs: 	urn:ietf:wg:oauth:2.0:oob http://localhost
-Application type: 	Android
-Package name: 	com.ultimasquare.pinview
-Certificate fingerprint (SHA1): 	86:F2:4D:FD:34:98:BF:0C:47:94:34:D4:8C:68:A3:84:B7:D7:B2:0F
-Deep Linking: 	Disabled*/
-
-
-import first.endtoend.helpers.Constant;
-import fr.unice.mbds.nfc.library.ApduError;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -24,12 +13,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+import first.endtoend.helpers.Constant;
+import fr.unice.mbds.nfc.library.ApduError;
 
 public class PinEntryView extends MyActivity {
 
 	String userEntered;
-	String userPin="8888";
 	
 	final int PIN_LENGTH = 4;
 	boolean keyPadLockedFlag = false;
@@ -156,17 +145,9 @@ public class PinEntryView extends MyActivity {
 		    		if (userEntered.length()==PIN_LENGTH)
 		    		{
 		    			//Check if entered PIN is correct
-		    			//select ins_PIN from applet where pin=1234;
-		    			ctrl.sendApdu("select " + Constant.INS_VERIFY_PIN 
-		   					 + " from applet where pin="+userEntered );	
-//		    			if (userEntered.equals(userPin))
-//		    			{
-//		    				
-//		    			}
-//		    			else
-//		    			{
-//		    				
-//		    			}
+		    			ctrl.execute("select " + Constant.INS_VERIFY_PIN 
+		   					 + " from applet where (pin="+userEntered+")", Constant.GET_PIN_CODE);	
+
 		    		}	
 		    	}
 		    	else
@@ -316,7 +297,7 @@ public class PinEntryView extends MyActivity {
 
 
 	@Override
-	public void onResponse(String[] response) {
+	public void onResponse(String[] response, int commandId) {
 		statusView.setTextColor(Color.GREEN);
 		statusView.setText("Correct");
 		Log.v("PinView", "Correct PIN");

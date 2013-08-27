@@ -6,8 +6,7 @@ import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class AddressFacade extends AbstractFacade<Address> {
 
-	public AddressFacade(Context context)
-			throws Exception {
+	public AddressFacade(Context context) {
 		super(Address.class, context);
 	}
 

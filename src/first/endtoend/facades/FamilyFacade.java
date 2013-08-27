@@ -6,8 +6,7 @@ import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class FamilyFacade extends AbstractFacade<Family> {
 
-	public FamilyFacade(Context context)
-			throws Exception {
+	public FamilyFacade(Context context){
 		super(Family.class, context);
 	}
 	

@@ -75,10 +75,10 @@ public class Constant {
 	public static final byte INS_SET_PASSWORD = 0x40;
 	public static final byte INS_GET_PASSWORD = 0x41;
 	public static final byte INS_VERIFY_PIN = 0x50;
-	public static final int GET_PASSWORD_CODE = 1;
-	public static final int GET_USERNAME_CODE = 0;
-	public static final int SET_USERNAME_CODE = 2;
-	public static final int SET_PASSWORD_CODE = 3;
 	
+	public static final int GET_LOGIN_INFO_CODE = 0;
+	public static final int SET_LOGIN_INFO_CODE = 1;
+	public static final int SAY_HELLO_CODE = 2;
+	public static final int GET_PIN_CODE = 3;
 	
 }

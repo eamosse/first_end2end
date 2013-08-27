@@ -1,5 +1,6 @@
 package first.endtoend;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -70,9 +71,10 @@ public class SplashScreenActivity extends Activity {
 	}
 
 	/**
-	 * Handler to close this activity and to start automatically {@link MainActivity}
-	 * after <code>SPLASHTIME</code> seconds.
+	 * Handler to close this activity and to start automatically LoginActivity
+	 * after  splash time
 	 */
+	@SuppressLint("HandlerLeak")
 	private final transient Handler splashHandler = new Handler()
 	{
 		@Override
