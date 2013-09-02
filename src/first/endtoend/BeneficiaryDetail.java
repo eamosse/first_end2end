@@ -90,9 +90,17 @@ public class BeneficiaryDetail extends MyActivity {
 		AQuery aq = new AQuery(this);
 		ImageOptions options = new ImageOptions(); 
 		options.round=15;
+		
 		String str = beneficiary.getPhotoURL();
-		String directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+getString(R.string.benefPhotosOffLine);
-		aq.id(R.id.beneficiaryImage).image(directoryPath+str, options);
+		if(!"".equals(str)){
+			String directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+getString(R.string.benefPhotosOffLine);
+			aq.id(R.id.beneficiaryImage).image(directoryPath+str, options);
+		}
+		else{
+			aq.id(R.id.beneficiaryImage).image(R.drawable.ic_launcher);
+		}
+		
+		
 
 		//Setting values to Layout text views		
 		TextView fName = (TextView) findViewById(R.id.valuefirstName);

@@ -20,6 +20,7 @@ import first.endtoend.facades.BeneficiaryFacade;
 import first.endtoend.facades.FamilyFacade;
 import first.endtoend.facades.RationCardFacade;
 import first.endtoend.helpers.Constant;
+import first.endtoend.helpers.Crypto;
 import first.endtoend.helpers.DialogHelper;
 import first.endtoend.helpers.JsonHelper;
 import first.endtoend.models.FIAgent;
@@ -31,7 +32,7 @@ public class TagActivity extends MyActivity {
 
 
 	public static String idTag;
-	
+
 	String soundOrVib;
 	Resources res;
 
@@ -63,14 +64,19 @@ public class TagActivity extends MyActivity {
 		if(!storedUserString.isEmpty()){
 			user = JsonHelper.getObjectFromJson(storedUserString,FIAgent.class,"");
 		}
-		
+
 		//TODO: if no user is found show an alert message and close this 
 		progressDialog = new ProgressDialog(this);
 
 		setContentView(R.layout.activity_tag);
 		SharedPreferences mgr = PreferenceManager.getDefaultSharedPreferences(this);
 		soundOrVib = mgr.getString("sound", "default");
-		resolveIntent(getIntent());
+		try {
+			resolveIntent(getIntent());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		res = getResources();
 
 		try {
@@ -86,7 +92,7 @@ public class TagActivity extends MyActivity {
 		agentName.setText("Agent : "+user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
 
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -99,11 +105,16 @@ public class TagActivity extends MyActivity {
 	@Override
 	public void onNewIntent(Intent intent) {
 		setIntent(intent);
-		resolveIntent(intent);
+		try {
+			resolveIntent(intent);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 	}
 
 
-	void resolveIntent(Intent intent) {
+	void resolveIntent(Intent intent) throws Exception {
 		// Parse the intent
 		String action = intent.getAction();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
@@ -152,20 +163,19 @@ public class TagActivity extends MyActivity {
 			DialogHelper.showErrorDialog(alert,getString( R.string.code_501),getString( R.string.code_501_message));
 			System.out.println("No RationCard returned with this tagId :"+tagId);
 		}
-
-
 	}
 
-	String getTextData(byte[] payload) {
+	String getTextData(byte[] payload) throws Exception {
+		Crypto cr = new Crypto();
 		String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
 		int languageCodeLength = payload[0] & 0077;
 		try {
-			return new String(payload,languageCodeLength+1,payload.length - languageCodeLength - 1, textEncoding);
+			String message = new String(payload,languageCodeLength+1,payload.length - languageCodeLength - 1, textEncoding);
+			return cr.decrypt(message);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 		return "";
-
 	}
 
 	/**
