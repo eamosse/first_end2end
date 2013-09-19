@@ -67,18 +67,9 @@ public class Constant {
 	 * APDU Constants
 	 */
 	
-	public static final byte[] APPLET_AID = new byte[]{(byte)0xA0, 0x00, 0x41, 0x44, 0x50,
-		0x00, 0x00, 0x00, 0x01};
-	public static final byte CLA = (byte) 0x00;
-	public static final byte INS_SET_USERNAME = 0x30;
-	public static final byte INS_GET_USERNAME = 0x31;
-	public static final byte INS_SET_PASSWORD = 0x40;
-	public static final byte INS_GET_PASSWORD = 0x41;
-	public static final byte INS_VERIFY_PIN = 0x50;
-	
 	public static final int GET_LOGIN_INFO_CODE = 0;
 	public static final int SET_LOGIN_INFO_CODE = 1;
 	public static final int SAY_HELLO_CODE = 2;
 	public static final int GET_PIN_CODE = 3;
-	
+	public static final int GET_KEY_CODE = 4;
 }

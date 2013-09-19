@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.first.nfc.apduql.ApduError;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.gson.reflect.TypeToken;
 
@@ -55,7 +56,6 @@ import first.endtoend.models.Portfolio;
 import first.endtoend.models.PortfolioDetail;
 import first.endtoend.models.Product;
 import first.endtoend.models.RationCard;
-import fr.unice.mbds.nfc.library.ApduError;
 
 public class LoginActivity extends MyActivity {
 	String username, password, message,regId, usernameStored, passwordStored;
@@ -114,9 +114,7 @@ public class LoginActivity extends MyActivity {
 
 				} else {
 					if(areSEAndAppletPresents)
-						ctrl.execute("select " + Constant.INS_GET_PASSWORD
-								+ "," + Constant.INS_GET_USERNAME
-								+ " from ", Constant.GET_LOGIN_INFO_CODE);
+						ctrl.execute("select username, password from pds_applet", Constant.GET_LOGIN_INFO_CODE);
 					else{
 						if (!hasRun) {
 							loginOnServer();
@@ -755,15 +753,16 @@ public class LoginActivity extends MyActivity {
 	}
 
 	@Override
-	public void onResponse(String[] response, int commandId) {
+	public void onResponse(Map<String, Object> results, int commandId) {
 		switch (commandId) {
 		case Constant.GET_LOGIN_INFO_CODE:
-			if(response.length>= 2) {
+			if(results.size()>= 2) {
 				if (!hasRun) {
 					loginOnServer();
 				} else {
-					usernameStored = response[0];
-					passwordStored = response[1];
+					usernameStored = String.valueOf(results.get("username"));
+					passwordStored = String.valueOf(results.get("password"));
+					System.out.println(usernameStored + "@@@@" + passwordStored);
 					checkLoginAndPassword();
 				}
 			}

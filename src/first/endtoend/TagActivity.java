@@ -1,6 +1,7 @@
 package first.endtoend;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -33,10 +34,9 @@ public class TagActivity extends MyActivity {
 
 	public static String idTag;
 
-	String soundOrVib;
+	String soundOrVib,messageReceived;
 	Resources res;
-
-	String messageReceived;
+ 
 	public ProgressDialog progressDialog;
 
 	AlertDialog.Builder alert;
@@ -48,9 +48,12 @@ public class TagActivity extends MyActivity {
 	BeneficiaryFacade bf;
 
 	private FIAgent user;
+	private String decryptKey;
 
 	public static Family family;
 	public static RationCard rationCard;
+	Parcelable[] rawMsgs;
+	NdefMessage[] messages;
 
 	/**
 	 * Called when the activity is first created.
@@ -60,7 +63,6 @@ public class TagActivity extends MyActivity {
 		super.onCreate(savedInstanceState);
 		settings = getSharedPreferences(PREF_NAME, 0);
 		String storedUserString  = settings.getString(Constant.USER, ""); 
-		System.out.println("user " + storedUserString);
 		if(!storedUserString.isEmpty()){
 			user = JsonHelper.getObjectFromJson(storedUserString,FIAgent.class,"");
 		}
@@ -108,36 +110,21 @@ public class TagActivity extends MyActivity {
 		try {
 			resolveIntent(intent);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 	}
 
 
 	void resolveIntent(Intent intent) throws Exception {
+		
+		
+		
 		// Parse the intent
 		String action = intent.getAction();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-			Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-			NdefMessage[] messages = null;
-			if (rawMsgs != null) {
-				messages = new NdefMessage[rawMsgs.length];
-				for (int i = 0; i < rawMsgs.length; i++) {
-					messages[i] = (NdefMessage) rawMsgs[i];
-				}
-				if (messages.length != 0) {
-					NdefRecord record = messages[0].getRecords()[0];
-					String message = getTextData(record.getPayload());
-					idTag = message;
-					if(!idTag.isEmpty()){
-						processTag(idTag);
-					}
-					else{
-						alert = new AlertDialog.Builder(TagActivity.this);
-						DialogHelper.showErrorDialog(alert, getString(R.string.error), getString(R.string.tagNotSupported));
-					}
-				}
-			}
+			rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+			ctrl.execute("select key from pds_applet", Constant.GET_KEY_CODE);
+		DialogHelper.showProcessingDialog(progressDialog, "Searching", "Please wait ...");
 		}
 	}
 
@@ -165,13 +152,14 @@ public class TagActivity extends MyActivity {
 		}
 	}
 
-	String getTextData(byte[] payload) throws Exception {
-		Crypto cr = new Crypto();
+	String getTextData(byte[] payload, String decryptKey) throws Exception {
+		Crypto cr = new Crypto(decryptKey);
 		String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
 		int languageCodeLength = payload[0] & 0077;
 		try {
-			String message = new String(payload,languageCodeLength+1,payload.length - languageCodeLength - 1, textEncoding);
-			return cr.decrypt(message);
+			String message = cr.decrypt(new String(payload,languageCodeLength+1,payload.length - languageCodeLength - 1, textEncoding));
+			System.out.println("Message decrypt : "+message);
+			return message;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -184,19 +172,51 @@ public class TagActivity extends MyActivity {
 	@Override 
 	public void onBackPressed() {
 		alert = new AlertDialog.Builder(this);
-		alert.setMessage(getString(R.string.quitconfirm)+" "+getString(R.string.logout_message));
-		alert.setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+		alert.setTitle(R.string.exit);
+		alert.setMessage(getString(R.string.quitconfirm));
+		alert.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dlg, int sumthin) {
-				DialogHelper.processingDisconnection(progressDialog, TagActivity.this);
+				logout();
 			}
 		});
-		alert.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+		alert.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
 			}
 		});
 		alert.show();
+	}
+	
+	
+	@Override
+	public void onResponse(Map<String, Object> results, int code) {
+		if(code == Constant.GET_KEY_CODE){
+			progressDialog.dismiss();
+			decryptKey = String.valueOf(results.get("key"));
+			if (rawMsgs != null) {
+				messages = new NdefMessage[rawMsgs.length];
+				for (int i = 0; i < rawMsgs.length; i++) {
+					messages[i] = (NdefMessage) rawMsgs[i];
+				}
+				if (messages.length != 0) {
+					NdefRecord record = messages[0].getRecords()[0];
+					try {
+						idTag = getTextData(record.getPayload(), decryptKey);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					if(!idTag.isEmpty()){
+						processTag(idTag);
+					}
+					else{
+						alert = new AlertDialog.Builder(TagActivity.this);
+						DialogHelper.showErrorDialog(alert, getString(R.string.error), getString(R.string.tagNotSupported));
+					}
+				}
+			}
+		}
 	}
 }

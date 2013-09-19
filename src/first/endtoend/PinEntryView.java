@@ -1,5 +1,7 @@
 package first.endtoend;
 
+import java.util.Map;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -13,8 +15,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.first.nfc.apduql.ApduError;
+
 import first.endtoend.helpers.Constant;
-import fr.unice.mbds.nfc.library.ApduError;
 
 public class PinEntryView extends MyActivity {
 
@@ -98,7 +102,6 @@ public class PinEntryView extends MyActivity {
 		    		pinBoxArray[userEntered.length()].setText("");
 		    	}
 		    
-		    
 		    }
 		    
 		    }
@@ -145,8 +148,7 @@ public class PinEntryView extends MyActivity {
 		    		if (userEntered.length()==PIN_LENGTH)
 		    		{
 		    			//Check if entered PIN is correct
-		    			ctrl.execute("select " + Constant.INS_VERIFY_PIN 
-		   					 + " from applet where (pin="+userEntered+")", Constant.GET_PIN_CODE);	
+		    			ctrl.execute("select pin from pds_applet where (pin="+userEntered+")", Constant.GET_PIN_CODE);	
 
 		    		}	
 		    	}
@@ -297,7 +299,8 @@ public class PinEntryView extends MyActivity {
 
 
 	@Override
-	public void onResponse(String[] response, int commandId) {
+	public void onResponse(Map<String, Object> results, int commandId) {
+		System.out.println("Response received again!!!!!!!!!");
 		statusView.setTextColor(Color.GREEN);
 		statusView.setText("Correct");
 		Log.v("PinView", "Correct PIN");

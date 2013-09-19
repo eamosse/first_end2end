@@ -1,0 +1,86 @@
+<config>
+   <applets class="java.util.ArrayList">
+      <applet name="pds_applet" AID="A00041445000000001">
+         <classes class="java.util.ArrayList">
+            <instructionModel>
+               <clazz>SELECT</clazz>
+               <value>90</value>
+            </instructionModel>
+            <instructionModel>
+               <clazz>INSERT</clazz>
+               <value>80</value>
+            </instructionModel>
+         </classes>
+         <fields class="java.util.ArrayList">
+            <fieldModel>
+               <name>username</name>
+               <value>30</value>
+               <length>9</length>
+            </fieldModel>
+            <fieldModel>
+               <name>password</name>
+               <value>40</value>
+               <length>9</length>
+            </fieldModel>
+            <fieldModel>
+               <name>key</name>
+               <value>31</value>
+               <length>255</length>
+            </fieldModel>
+            <fieldModel>
+               <name>pin</name>
+               <value>50</value>
+               <length>4</length>
+            </fieldModel>
+         </fields>
+      </applet>
+      <applet name="wallet" AID="01245668875624">
+         <classes class="java.util.ArrayList">
+            <instructionModel>
+               <clazz>SELECT</clazz>
+               <value>BA</value>
+            </instructionModel>
+            <instructionModel>
+               <clazz>INSERT</clazz>
+               <value>AB</value>
+            </instructionModel>
+         </classes>
+         <fields class="java.util.ArrayList">
+            <fieldModel>
+               <name>balance</name>
+               <value>30</value>
+               <length>10</length>
+            </fieldModel>
+            <fieldModel>
+               <name>transcation</name>
+               <value>74</value>
+               <length>25</length>
+            </fieldModel>
+         </fields>
+      </applet>
+      <applet name="circulation" AID="01245668875624">
+         <classes class="java.util.ArrayList">
+            <instructionModel>
+               <clazz>SELECT</clazz>
+               <value>45</value>
+            </instructionModel>
+            <instructionModel>
+               <clazz>DESCRIBE</clazz>
+               <value>22</value>
+            </instructionModel>
+         </classes>
+         <fields class="java.util.ArrayList">
+            <fieldModel>
+               <name>transaction</name>
+               <value>24</value>
+               <length>2</length>
+            </fieldModel>
+            <fieldModel>
+               <name>montant</name>
+               <value>14</value>
+               <length>45</length>
+            </fieldModel>
+         </fields>
+      </applet>
+   </applets>
+</config>

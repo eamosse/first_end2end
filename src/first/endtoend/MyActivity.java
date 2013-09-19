@@ -1,5 +1,7 @@
 package first.endtoend;
 
+import java.util.Map;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,9 +10,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-import fr.unice.mbds.nfc.library.ApduCallBack;
-import fr.unice.mbds.nfc.library.ApduError;
-import fr.unice.mbds.nfc.library.NfcController;
+
+import com.first.nfc.apduql.ApduCallBack;
+import com.first.nfc.apduql.ApduError;
+import com.first.nfc.apduql.NfcController;
 
 public class MyActivity extends Activity implements ApduCallBack{
 
@@ -24,14 +27,13 @@ public class MyActivity extends Activity implements ApduCallBack{
 		MyApplication act = (MyApplication)getApplication(); 
 	    ctrl = act.getController();
 	    areSEAndAppletPresents = act.areSEAndAppletPresents;
-	    
-	    
+	   
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		ctrl.setCallback(this);
+		 ctrl.setCallback(this);	    
 		if(!ctrl.isServiceConnected()) {
 		    ctrl.initService();
 		}
@@ -56,13 +58,11 @@ public class MyActivity extends Activity implements ApduCallBack{
 	}
 
 
-	private void logout() {
+	protected void logout() {
 		AlertDialog.Builder ab = new AlertDialog.Builder(this);
 		ab.setTitle(R.string.logout);
 
 		ab.setMessage(R.string.logout_message);
-
-
 		ab.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
 
 			@Override
@@ -78,6 +78,7 @@ public class MyActivity extends Activity implements ApduCallBack{
 			public void onClick(DialogInterface dialog, int which) {
 				Intent intent = new Intent(MyActivity.this, LoginActivity.class);
 				startActivity(intent);
+				ctrl.destroy();
 				MyActivity.this.finish();
 			}
 		});
@@ -155,10 +156,17 @@ public class MyActivity extends Activity implements ApduCallBack{
 		startActivity(new Intent(this, PinEntryView.class));
 	}
 
+
 	@Override
-	public void onResponse(String[] response, int commandId) {
+	public void onBadRequest(String message) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onResponse(Map<String, Object> results, int code) {
+		// TODO Auto-generated method stub
+		System.out.println("Response received!!!!!!!!!");
 	}
 
 

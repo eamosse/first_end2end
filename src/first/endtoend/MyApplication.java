@@ -1,10 +1,19 @@
 package first.endtoend;
 
-import first.endtoend.helpers.Constant;
-import fr.unice.mbds.nfc.library.ApduCallBack;
-import fr.unice.mbds.nfc.library.ApduError;
-import fr.unice.mbds.nfc.library.NfcController;
+import java.util.Map;
+
 import android.app.Application;
+
+import com.first.nfc.apduql.ApduCallBack;
+import com.first.nfc.apduql.ApduError;
+import com.first.nfc.apduql.Applet;
+import com.first.nfc.apduql.Command;
+import com.first.nfc.apduql.Configuration;
+import com.first.nfc.apduql.FieldModel;
+import com.first.nfc.apduql.InstructionModel;
+import com.first.nfc.apduql.NfcController;
+
+import first.endtoend.helpers.Constant;
 
 public class MyApplication extends Application implements ApduCallBack{
 	 NfcController ctrl;
@@ -20,8 +29,8 @@ public class MyApplication extends Application implements ApduCallBack{
 	protected void init() {
 		System.out.println("init activity");
 		ctrl = new NfcController(getApplicationContext(), this);
-		ctrl.setAppletAID(Constant.APPLET_AID);
-		ctrl.setCLA(Constant.CLA);
+		//ctrl.setAppletAID(Constant.APPLET_AID);
+//		ctrl.setCLA(Constant.CLA);
 		ctrl.initService();
 	}
 
@@ -30,12 +39,6 @@ public class MyApplication extends Application implements ApduCallBack{
 
 	}
 	
-	@Override
-	public void onTerminate() {
-		// TODO Auto-generated method stub
-		super.onTerminate();
-		//ctrl.destroy();
-	}
 
 	@Override
 	public void onNotConnected() {
@@ -46,7 +49,25 @@ public class MyApplication extends Application implements ApduCallBack{
 	@Override
 	public void onConnected() {
 		// TODO Auto-generated method stub
-		ctrl.sayHello(Constant.SAY_HELLO_CODE);
+//		String AID = "A00041445000000001";
+//		Applet pds_applet = new Applet();
+//		pds_applet.setName("pds_applet");
+//		pds_applet.setAID(AID);
+//		
+//		try {
+//		
+//			pds_applet.addClass(new InstructionModel(Command.SELECT, "B0"));
+//			pds_applet.addClass(new InstructionModel(Command.INSERT, "C0"));
+//			pds_applet.addFields(new FieldModel("username", "30", 9));
+//			pds_applet.addFields(new FieldModel("password", "40",9));
+//			pds_applet.addFields(new FieldModel("pin", "50",4));
+//			pds_applet.addFields(new FieldModel("key", "31",255));
+//			Configuration.save(pds_applet);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		System.out.println("Connected");
+		ctrl.sayHello("pds_applet",Constant.SAY_HELLO_CODE);
 	}
 
 	@Override
@@ -80,20 +101,25 @@ public class MyApplication extends Application implements ApduCallBack{
 	}
 
 	@Override
-	public void onResponse(String[] response, int commandId) {
+	public void onPINRequired() {
 		// TODO Auto-generated method stub
-		switch (commandId) {
-		case Constant.SAY_HELLO_CODE:
-			areSEAndAppletPresents = true;
-			break;
-		}
 		
 	}
 
 	@Override
-	public void onPINRequired() {
+	public void onBadRequest(String message) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void onResponse(Map<String, Object> results, int code) {
+		// TODO Auto-generated method stub
+		switch (code) {
+		case Constant.SAY_HELLO_CODE:
+			areSEAndAppletPresents = true;
+			break;
+		}
 	}
 
 }
