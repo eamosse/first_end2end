@@ -304,6 +304,7 @@ public class PinEntryView extends MyActivity {
 		statusView.setTextColor(Color.GREEN);
 		statusView.setText("Correct");
 		Log.v("PinView", "Correct PIN");
+		setResult(RESULT_OK);
 		finish();
 	}
 	

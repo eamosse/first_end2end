@@ -15,6 +15,8 @@ import com.first.nfc.apduql.ApduCallBack;
 import com.first.nfc.apduql.ApduError;
 import com.first.nfc.apduql.NfcController;
 
+import first.endtoend.helpers.Constant;
+
 public class MyActivity extends Activity implements ApduCallBack{
 
 	protected boolean areSEAndAppletPresents;
@@ -153,7 +155,7 @@ public class MyActivity extends Activity implements ApduCallBack{
 	@Override
 	public void onPINRequired() {
 		// TODO Auto-generated method stub
-		startActivity(new Intent(this, PinEntryView.class));
+		startActivityForResult(new Intent(this, PinEntryView.class), Constant.PIN_LAUNCHED_REQUEST);
 	}
 
 

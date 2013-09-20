@@ -13,7 +13,9 @@ import com.first.nfc.apduql.FieldModel;
 import com.first.nfc.apduql.InstructionModel;
 import com.first.nfc.apduql.NfcController;
 
+import first.endtoend.dal.EndToEndSqliteHelper;
 import first.endtoend.helpers.Constant;
+import first.endtoend.sqliteHelpers.Utils;
 
 public class MyApplication extends Application implements ApduCallBack{
 	 NfcController ctrl;
@@ -27,6 +29,7 @@ public class MyApplication extends Application implements ApduCallBack{
 	}
 
 	protected void init() {
+		Utils.helper = new EndToEndSqliteHelper(this, null);
 		System.out.println("init activity");
 		ctrl = new NfcController(getApplicationContext(), this);
 		//ctrl.setAppletAID(Constant.APPLET_AID);

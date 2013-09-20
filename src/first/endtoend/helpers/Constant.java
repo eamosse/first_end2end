@@ -72,4 +72,5 @@ public class Constant {
 	public static final int SAY_HELLO_CODE = 2;
 	public static final int GET_PIN_CODE = 3;
 	public static final int GET_KEY_CODE = 4;
+	public static final int PIN_LAUNCHED_REQUEST = 0;
 }

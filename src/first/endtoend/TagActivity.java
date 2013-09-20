@@ -1,7 +1,15 @@
 package first.endtoend;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -36,7 +44,7 @@ public class TagActivity extends MyActivity {
 
 	String soundOrVib,messageReceived;
 	Resources res;
- 
+
 	public ProgressDialog progressDialog;
 
 	AlertDialog.Builder alert;
@@ -115,16 +123,16 @@ public class TagActivity extends MyActivity {
 	}
 
 
-	void resolveIntent(Intent intent) throws Exception {
-		
-		
-		
+	void resolveIntent(Intent intent){
+
+
+
 		// Parse the intent
 		String action = intent.getAction();
 		if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
 			rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
 			ctrl.execute("select key from pds_applet", Constant.GET_KEY_CODE);
-		DialogHelper.showProcessingDialog(progressDialog, "Searching", "Please wait ...");
+			DialogHelper.showProcessingDialog(progressDialog, "Searching", "Please wait ...");
 		}
 	}
 
@@ -152,7 +160,7 @@ public class TagActivity extends MyActivity {
 		}
 	}
 
-	String getTextData(byte[] payload, String decryptKey) throws Exception {
+	String getTextData(byte[] payload, String decryptKey) throws InvalidKeyException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, IOException {
 		Crypto cr = new Crypto(decryptKey);
 		String textEncoding = ((payload[0] & 0200) == 0) ? "UTF-8" : "UTF-16";
 		int languageCodeLength = payload[0] & 0077;
@@ -188,13 +196,14 @@ public class TagActivity extends MyActivity {
 		});
 		alert.show();
 	}
-	
-	
+
+
 	@Override
 	public void onResponse(Map<String, Object> results, int code) {
 		if(code == Constant.GET_KEY_CODE){
 			progressDialog.dismiss();
 			decryptKey = String.valueOf(results.get("key"));
+			System.out.println("Decrypt key --> "+decryptKey);
 			if (rawMsgs != null) {
 				messages = new NdefMessage[rawMsgs.length];
 				for (int i = 0; i < rawMsgs.length; i++) {
@@ -202,12 +211,35 @@ public class TagActivity extends MyActivity {
 				}
 				if (messages.length != 0) {
 					NdefRecord record = messages[0].getRecords()[0];
-					try {
-						idTag = getTextData(record.getPayload(), decryptKey);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					
+						try {
+							idTag = getTextData(record.getPayload(), decryptKey);
+						} catch (InvalidKeyException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchAlgorithmException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (InvalidKeySpecException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (NoSuchPaddingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (IllegalBlockSizeException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (BadPaddingException e) {
+							// TODO Auto-generated catch block
+							alert = new AlertDialog.Builder(TagActivity.this);
+							DialogHelper.showErrorDialog(alert, getString(R.string.error), "Wrong data format");
+							e.printStackTrace();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						System.out.println("IdTag ==> "+idTag);
+					
 					if(!idTag.isEmpty()){
 						processTag(idTag);
 					}

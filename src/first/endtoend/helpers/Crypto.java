@@ -65,7 +65,7 @@ public class Crypto {
       public String decrypt(String encrypted) throws InvalidKeyException,
 	    NoSuchAlgorithmException, NoSuchPaddingException,
 	    IllegalBlockSizeException, BadPaddingException, IOException {
- 
+    	  System.out.println("Encrypted message in crypto "+encrypted);
 		// Get a cipher object.
 		Cipher cipher = Cipher.getInstance("DES");
 		cipher.init(Cipher.DECRYPT_MODE, key);

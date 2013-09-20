@@ -86,7 +86,7 @@ public class LoginActivity extends MyActivity {
 		aquery = new AQuery(this);
 		settings = getSharedPreferences(PREF_NAME, 0); // load the preferences
 		hasRun = settings.getBoolean("hasRun", false); // see if it's run before, default no		
-		
+
 		categoryFacade = new CategoryFacade(this);
 		productFacade = new ProductFacade(this);
 		aidFacade = new AidFacade(this);
@@ -130,6 +130,17 @@ public class LoginActivity extends MyActivity {
 		});
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == Constant.PIN_LAUNCHED_REQUEST && resultCode == RESULT_OK){
+			if(!hasRun)
+				loginOnServer();
+			else{
+				ctrl.setCallback(this);
+				ctrl.execute("select username, password from pds_applet", Constant.GET_LOGIN_INFO_CODE);
+			}
+		}
+	}
 	private void loginOnServer() {
 		// code for if this is the first time the app has run
 		String url = getString(R.string.url)
