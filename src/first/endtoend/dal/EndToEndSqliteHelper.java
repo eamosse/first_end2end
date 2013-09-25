@@ -3,6 +3,8 @@ package first.endtoend.dal;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import com.api.sqlitehelper.*;
+
 import first.endtoend.models.Address;
 import first.endtoend.models.Aid;
 import first.endtoend.models.Beneficiary;
@@ -14,8 +16,6 @@ import first.endtoend.models.Product;
 import first.endtoend.models.RationCard;
 import first.endtoend.models.Trace;
 import first.endtoend.models.TraceDetail;
-import first.endtoend.sqliteHelpers.SQliteHelper;
-import first.endtoend.sqliteHelpers.Utils;
 
 public class EndToEndSqliteHelper extends SQliteHelper {
 	String dbName = "endtoendDB";

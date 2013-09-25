@@ -5,41 +5,140 @@
     android:background="@color/background_color"
     android:orientation="vertical" >
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+<!--     <LinearLayout -->
+<!--         android:layout_width="match_parent" -->
+<!--         android:layout_height="wrap_content" -->
+<!--         android:orientation="vertical" > -->
 
-        <TextView
-            android:id="@+id/agentName"
+<!--         <LinearLayout -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:orientation="horizontal" > -->
+            
+<!--             <TextView -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_alignBaseline="@+id/textView1" -->
+<!--             android:layout_alignBottom="@+id/textView1" -->
+<!--             android:layout_alignRight="@+id/textView2" -->
+<!--             android:layout_marginRight="41dp" -->
+<!--             android:text="Family : " /> -->
+<!--             <TextView -->
+<!--             android:id="@+id/familyName" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_above="@+id/familyAddress" -->
+<!--             android:layout_toLeftOf="@+id/textView1" -->
+<!--             android:text="family" /> -->
+           
+<!--         </LinearLayout> -->
+<!--         <LinearLayout -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:orientation="horizontal" > -->
+<!--             <TextView -->
+<!--             android:id="@+id/textView1" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_above="@+id/familyName" -->
+<!--             android:layout_alignLeft="@+id/familyPhone" -->
+<!--             android:layout_marginLeft="30dp" -->
+<!--             android:text="Address : " /> -->
+<!--             <TextView -->
+<!--             android:id="@+id/familyAddress" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:layout_centerVertical="true" -->
+<!--             android:layout_toLeftOf="@+id/familyPhone" -->
+<!--             android:text="address" /> -->
+            
+<!--         </LinearLayout> -->
+<!--         <LinearLayout -->
+<!--             android:layout_width="match_parent" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:orientation="horizontal" > -->
+<!--             <TextView -->
+<!--             android:id="@+id/textView2" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:text="Telephone : " /> -->
+<!--          <TextView -->
+<!--             android:id="@+id/familyPhone" -->
+<!--             android:layout_width="wrap_content" -->
+<!--             android:layout_height="wrap_content" -->
+<!--             android:text="Phone" /> -->
+<!--         </LinearLayout> -->
+        
+        
+<!--     </LinearLayout> -->
+
+     <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:background="@android:color/holo_blue_dark"
+        android:layout_margin="5dp"
+        android:padding="15dp">
+        
+         <TextView
+            android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="94dp"
-            android:text=""
-            android:textStyle="bold" />
-    </RelativeLayout>
+            style="@style/bold_title"
+            android:text="Family : " />
+        
+           <TextView
+            android:id="@+id/familyName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/textView1"
+            android:text="family" />
+           
+           <View style="@style/separator" android:id="@+id/sp1" android:layout_below="@id/familyName"/>"
+           
+           <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sp1"
+            style="@style/bold_title"
+            android:text="Telephone : " />
 
-    <TextView
-        android:id="@+id/beneficarieslist"
-        android:layout_width="fill_parent"
-        android:layout_height="72dp"
-        android:gravity="center"
-        android:fontFamily=""
-        android:text="@string/beneficiarieslist"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="30sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/familyPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:layout_below="@id/sp1"
+            android:layout_toRightOf="@id/textView2"
+            android:text="Phone" />
+        
+      <View style="@style/separator" android:id="@+id/sp2" android:layout_below="@id/familyPhone"/>
+        
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/sp2"
+            style="@style/bold_title"
+            android:text="Address : " />
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/familyAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:layout_below="@id/sp2"
+            android:layout_toRightOf="@+id/textView3"
+            android:text="address" />
+    </RelativeLayout> 
+    
+     <View
+    android:layout_width="fill_parent"
+    android:layout_height="1dip"
+    android:background="#000000" />
 
     <ListView
         android:id="@+id/listViewBeneficiaries"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
+        android:layout_height="match_parent" >
     </ListView>
 
 </LinearLayout>

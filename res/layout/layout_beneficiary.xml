@@ -1,42 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="65dip"
-    android:background="@color/layout_color"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
     android:baselineAligned="true"
     android:orientation="horizontal" >
-<RelativeLayout
-    android:layout_width="wrap_content"
-    android:layout_height="64dip" 
-    >
-    
-    <ProgressBar                
-        android:layout_width="15dip"       
-        android:layout_height="15dip"
-        android:id="@+id/progress" 
-        android:layout_centerInParent="true"
-        />
     
     <ImageView
             android:id="@+id/benefImage"
-            android:layout_width="60dp"
-            android:layout_height="fill_parent"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginRight="2dp"
+            android:scaleType="fitXY"
             android:contentDescription="@string/beneficiaryImage"
-            android:scaleType="centerCrop"
             android:src="@drawable/personicon" />
-
-</RelativeLayout>
-    
         <TextView
-            android:id="@+id/beneficiaryname"
-            android:layout_width="0dip"
-            android:layout_height="match_parent"
-            android:layout_weight="0.99"
-            android:text=""
-            android:textColor="@color/background_color"
-            android:fontFamily=""
-            android:gravity="center_vertical"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-</LinearLayout>
+            android:id="@+id/beneficiaryLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/benefImage"
+            style="@style/bold_title"
+            android:text="Lastname" />
+        
+          <TextView
+            android:id="@+id/beneficiaryFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/benefImage"
+            android:layout_below="@id/beneficiaryLastName"
+            android:text="FirstName"
+            style="@style/bold_title" />
+</RelativeLayout>

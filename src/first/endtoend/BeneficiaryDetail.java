@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
-import com.androidquery.callback.ImageOptions;
 
 import first.endtoend.facades.AddressFacade;
 import first.endtoend.facades.PortfolioDetailFacade;
@@ -63,7 +62,7 @@ public class BeneficiaryDetail extends MyActivity {
 				for(Iterator<PortfolioDetail> itr = pfDetails.iterator();itr.hasNext();){  
 					PortfolioDetail pfd = itr.next();  
 					Date startDate = pfd.getAid().getStartDate();
-					
+
 					Date endDate = pfd.getAid().getEndDate();
 					System.out.println("Start : "+startDate+" End : "+endDate);
 					System.out.println(startDate.before(currentDate) && endDate.after(currentDate));
@@ -88,19 +87,12 @@ public class BeneficiaryDetail extends MyActivity {
 
 
 		AQuery aq = new AQuery(this);
-		ImageOptions options = new ImageOptions(); 
-		options.round=15;
-		
+
 		String str = beneficiary.getPhotoURL();
-		if(!"".equals(str)){
-			String directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+getString(R.string.benefPhotosOffLine);
-			aq.id(R.id.beneficiaryImage).image(directoryPath+str, options);
-		}
-		else{
-			aq.id(R.id.beneficiaryImage).image(R.drawable.ic_launcher);
-		}
-		
-		
+		String directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+getString(R.string.benefPhotosOffLine);
+
+		aq.id(R.id.beneficiaryImage).image(directoryPath+str,true, true, 0,R.drawable.ic_launcher);
+
 
 		//Setting values to Layout text views		
 		TextView fName = (TextView) findViewById(R.id.valuefirstName);

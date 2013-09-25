@@ -16,7 +16,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.first.nfc.apduql.ApduError;
+import com.first.nfc.apduql.exceptions.*;
 
 import first.endtoend.helpers.Constant;
 

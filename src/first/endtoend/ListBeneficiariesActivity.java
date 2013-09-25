@@ -7,13 +7,18 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import first.endtoend.adapters.BeneficiaryAdapter;
+import first.endtoend.facades.AddressFacade;
 import first.endtoend.facades.BeneficiaryFacade;
+import first.endtoend.models.Address;
 import first.endtoend.models.Beneficiary;
 import first.endtoend.models.Family;
 
@@ -27,32 +32,28 @@ public class ListBeneficiariesActivity extends MyActivity {
 	ProgressDialog progressDialog;	
 	BeneficiaryFacade benefFacade;
 	AlertDialog.Builder alert;
+	AddressFacade adrFacade;
+	Address adr;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
 		//setting Layout to the activity
 		setContentView(R.layout.activity_listing_beneficiaries);
-		
-		
-				
 		try {
 			benefFacade = new BeneficiaryFacade(this);
-			
+			adrFacade = new AddressFacade(this);
 			//Getting the beneficiaries list
 			beneficiaries = benefFacade.findEntitiesByForeignKey(TagActivity.family.getFamilyId(), Family.class);
+			adr = adrFacade.findEntityByForeignKey(TagActivity.family.getFamilyId(), Family.class);
+			((TextView)findViewById(R.id.familyName)).setText(TagActivity.family.getFamilyName()); 
+			((TextView)findViewById(R.id.familyAddress)).setText(adr.toString()); 
+			((TextView)findViewById(R.id.familyPhone)).setText(TagActivity.family.getPhoneNumber()); 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
 		
 		progressDialog = new ProgressDialog(ListBeneficiariesActivity.this);		
-		
-		//Displaying the name of the agent
-		TextView agentName = (TextView) findViewById(R.id.agentName);
-		agentName.setText("Agent : "+LoginActivity.user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
-
-				
 		adapter = new BeneficiaryAdapter(ListBeneficiariesActivity.this, beneficiaries);
 		final ListView listeViewBeneficiaries = (ListView) findViewById(R.id.listViewBeneficiaries);
 		listeViewBeneficiaries.setAdapter(adapter);
@@ -93,5 +94,12 @@ public class ListBeneficiariesActivity extends MyActivity {
 		
 		alert.show();
 		
+	}
+	
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.beneficiary_menu, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 }

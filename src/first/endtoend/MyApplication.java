@@ -4,18 +4,13 @@ import java.util.Map;
 
 import android.app.Application;
 
+import com.api.sqlitehelper.Utils;
 import com.first.nfc.apduql.ApduCallBack;
-import com.first.nfc.apduql.ApduError;
-import com.first.nfc.apduql.Applet;
-import com.first.nfc.apduql.Command;
-import com.first.nfc.apduql.Configuration;
-import com.first.nfc.apduql.FieldModel;
-import com.first.nfc.apduql.InstructionModel;
+import com.first.nfc.apduql.exceptions.*;
 import com.first.nfc.apduql.NfcController;
 
 import first.endtoend.dal.EndToEndSqliteHelper;
 import first.endtoend.helpers.Constant;
-import first.endtoend.sqliteHelpers.Utils;
 
 public class MyApplication extends Application implements ApduCallBack{
 	 NfcController ctrl;
@@ -32,8 +27,6 @@ public class MyApplication extends Application implements ApduCallBack{
 		Utils.helper = new EndToEndSqliteHelper(this, null);
 		System.out.println("init activity");
 		ctrl = new NfcController(getApplicationContext(), this);
-		//ctrl.setAppletAID(Constant.APPLET_AID);
-//		ctrl.setCLA(Constant.CLA);
 		ctrl.initService();
 	}
 
@@ -51,25 +44,7 @@ public class MyApplication extends Application implements ApduCallBack{
 
 	@Override
 	public void onConnected() {
-		// TODO Auto-generated method stub
-//		String AID = "A00041445000000001";
-//		Applet pds_applet = new Applet();
-//		pds_applet.setName("pds_applet");
-//		pds_applet.setAID(AID);
-//		
-//		try {
-//		
-//			pds_applet.addClass(new InstructionModel(Command.SELECT, "B0"));
-//			pds_applet.addClass(new InstructionModel(Command.INSERT, "C0"));
-//			pds_applet.addFields(new FieldModel("username", "30", 9));
-//			pds_applet.addFields(new FieldModel("password", "40",9));
-//			pds_applet.addFields(new FieldModel("pin", "50",4));
-//			pds_applet.addFields(new FieldModel("key", "31",255));
-//			Configuration.save(pds_applet);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		System.out.println("Connected");
+		System.out.println("Connected to SE");
 		ctrl.sayHello("pds_applet",Constant.SAY_HELLO_CODE);
 	}
 

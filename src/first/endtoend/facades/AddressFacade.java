@@ -1,8 +1,10 @@
 package first.endtoend.facades;
 
+import com.api.sqlitehelper.AbstractFacade;
+
 import android.content.Context;
+
 import first.endtoend.models.Address;
-import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class AddressFacade extends AbstractFacade<Address> {
 

@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.first.nfc.apduql.ApduError;
+import com.first.nfc.apduql.exceptions.*;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.gson.reflect.TypeToken;
 
@@ -82,6 +82,7 @@ public class LoginActivity extends MyActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		getActionBar().hide();
 		dialog = new ProgressDialog(this);
 		aquery = new AQuery(this);
 		settings = getSharedPreferences(PREF_NAME, 0); // load the preferences

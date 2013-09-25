@@ -5,8 +5,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.Cursor;
+
+import com.api.sqlitehelper.AbstractFacade;
+
 import first.endtoend.models.Trace;
-import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class TraceFacade extends AbstractFacade<Trace> {
 

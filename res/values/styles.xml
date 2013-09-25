@@ -18,10 +18,20 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
-    <style name="LoginFormContainer">
+    <style name="bold_title">
+        <item name="android:textSize">@dimen/title_size</item>
+        <item name="android:layout_marginRight">@dimen/margin_label_detail</item>
+        <item name="android:layout_marginBottom">@dimen/margin_label_detail</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="separator">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">16dp</item>
+         <item name="android:layout_height">@dimen/separator_height</item>
+        <item name="android:height">@dimen/separator_height</item>
+         <item name="android:background">#000000</item>
+        <item name="android:layout_marginTop">@dimen/separator_padding</item>
+        <item name="android:layout_marginBottom">@dimen/separator_padding</item>
     </style>
 
 </resources>

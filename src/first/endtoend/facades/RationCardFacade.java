@@ -2,8 +2,10 @@ package first.endtoend.facades;
 
 import android.content.Context;
 import android.database.Cursor;
+
+import com.api.sqlitehelper.AbstractFacade;
+
 import first.endtoend.models.RationCard;
-import first.endtoend.sqliteHelpers.AbstractFacade;
 
 public class RationCardFacade extends AbstractFacade<RationCard> {
 

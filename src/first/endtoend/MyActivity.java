@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.first.nfc.apduql.ApduCallBack;
-import com.first.nfc.apduql.ApduError;
+import com.first.nfc.apduql.exceptions.*;
 import com.first.nfc.apduql.NfcController;
 
 import first.endtoend.helpers.Constant;

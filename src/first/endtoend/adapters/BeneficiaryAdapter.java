@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.androidquery.AQuery;
@@ -48,7 +49,8 @@ public class BeneficiaryAdapter extends BaseAdapter {
 	}
 
 	class MyView{
-		TextView text;
+		TextView firstName;
+		TextView lastName;
 		ImageView image;
 
 	}
@@ -56,27 +58,28 @@ public class BeneficiaryAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent){
-		LinearLayout layoutItem;
+		RelativeLayout layoutItem;
 		MyView view;
 		if (convertView == null){
-			layoutItem = (LinearLayout) mInflater.inflate(R.layout.layout_beneficiary, parent, false);
+			layoutItem = (RelativeLayout) mInflater.inflate(R.layout.layout_beneficiary, parent, false);
 			view = new MyView();
-			view.text= (TextView) layoutItem.findViewById(R.id.beneficiaryname);
+			view.firstName= (TextView) layoutItem.findViewById(R.id.beneficiaryFirstName);
+			view.lastName= (TextView) layoutItem.findViewById(R.id.beneficiaryLastName);
 			view.image = (ImageView) layoutItem.findViewById(R.id.benefImage);
 			Beneficiary beneficiary = listBeneficiaries.get(position);
 			
 			System.out.println(JsonHelper.createJsonObject(beneficiary));
 
-			view.text.setText(beneficiary.getFirstName()+" - "+beneficiary.getLastName());
-
+			view.firstName.setText(beneficiary.getFirstName());
+			view.lastName.setText(beneficiary.getLastName());
 			// set image based on selected text
 
 			String strPhoto=beneficiary.getPhotoURL();
 			String directoryPath = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+context.getString(R.string.benefPhotosOffLine);
 			
-			query.id(view.image).progress(R.id.progress).image(directoryPath+strPhoto,true, true, 0,R.drawable.ic_launcher);
+			query.id(view.image).image(directoryPath+strPhoto,true, true, 0,R.drawable.ic_launcher);
 		} else {
-			layoutItem = (LinearLayout) convertView;
+			layoutItem = (RelativeLayout) convertView;
 			view = (MyView)convertView.getTag();
 
 		}

@@ -3,12 +3,11 @@ package first.endtoend.models;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.api.sqlitehelper.ClassPersistable;
+import com.api.sqlitehelper.FieldPersistable;
+import com.api.sqlitehelper.FieldPersistable.Type;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import first.endtoend.sqliteHelpers.ClassPersistable;
-import first.endtoend.sqliteHelpers.FieldPersistable;
-import first.endtoend.sqliteHelpers.FieldPersistable.Type;
 
 @ClassPersistable
 public class Aid implements Serializable {
