@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-     <string name="url">http://134.59.152.106/First-EndToEnd/</string>
+     <string name="url">http://mbds-dev10.unice.fr/First-EndToEnd-0.1/</string>
     <!--   <string name="url">http://192.168.0.115:8080/First-EndToEnd/</string>
    --> <string name="syncTrace">webservice/retrieveAid</string>
     <string name="connexion">j_spring_security_check</string>

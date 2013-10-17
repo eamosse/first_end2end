@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import first.endtoend.adapters.SupplyAdapter;
 import first.endtoend.helpers.DialogHelper;
 
@@ -37,11 +36,6 @@ public class SupplyActivity extends MyActivity{
 		setContentView(R.layout.activity_supply);
 
 
-		//Displaying the name of the agent
-		TextView agentName = (TextView) findViewById(R.id.agentName);
-		agentName.setText("Agent : "+LoginActivity.user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
-
-
 		validateBtn = (Button) findViewById(R.id.validBtnSupply);
 
 		backBtn = (Button) findViewById(R.id.backBtnSupply);
@@ -55,7 +49,7 @@ public class SupplyActivity extends MyActivity{
 
 		listview = (ListView)findViewById(R.id.listView1);
 
-		adapter = new SupplyAdapter(BeneficiaryDetail.portfolio.getProductsSelected(), SupplyActivity.this);
+		adapter = new SupplyAdapter(ListBeneficiariesActivity.portfolio.getProductsSelected(), SupplyActivity.this);
 		listview.setAdapter(adapter);
 
 		validateBtn.setOnClickListener(new View.OnClickListener() {

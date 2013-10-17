@@ -98,23 +98,32 @@ public class MyActivity extends Activity implements ApduCallBack{
 	@Override
 	public void onNoSecureElement() {
 		// TODO Auto-generated method stub
+		AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		alert.setMessage(R.string.noSecureElement);
+		alert.setCancelable(false);
+		alert.setPositiveButton(R.string.closeApp, new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				finish();
+			}
+		});
+		alert.show();
+
 	}
 
 	@Override
 	public void onAPDUError(ApduError error) {
 		// TODO handle errors 
-		Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
-		System.out.println("error code "+error.getApduError()[0]);
-		
-		
+		Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();	
 	}
 
 	@Override
 	public void onNoReader() {
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setMessage("Sorry! this phone is not NFC Capable");
+		alert.setMessage(R.string.noNFCPhone);
 		alert.setCancelable(false);
-		alert.setPositiveButton("leave App", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(R.string.closeApp, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -128,9 +137,9 @@ public class MyActivity extends Activity implements ApduCallBack{
 	public void onNoApplet() {
 		// TODO call service to perform TSM task (install applet on simcard)
 		AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setMessage("Your Sim Card need to be updated");
+		alert.setMessage(R.string.noApplet);
 		alert.setCancelable(false);
-		alert.setPositiveButton("leave App", new DialogInterface.OnClickListener() {
+		alert.setPositiveButton(R.string.closeApp, new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dialog.dismiss();
@@ -168,7 +177,6 @@ public class MyActivity extends Activity implements ApduCallBack{
 	@Override
 	public void onResponse(Map<String, Object> results, int code) {
 		// TODO Auto-generated method stub
-		System.out.println("Response received!!!!!!!!!");
 	}
 
 

@@ -35,4 +35,8 @@
     <string name="location_failed_message1">Position cannot be localized. Please Check your location Sharing in Device Settings and Retry.</string>
     <string name="location_failed_message2">Position cannot be localized. So, the transaction cannot be completed. Please Check your location Sharing in Device Settings and Retry.</string>
 	<string name="request_not_received">The request doesn\'t reach the server, retry</string>
+
+	<string name="noSecureElement">No Secure Element Available</string>
+	<string name="noApplet">Your Sim Card need to be updated</string>
+	<string name="noNFCPhone">Sorry! this phone is not NFC Capable</string>
 </resources>

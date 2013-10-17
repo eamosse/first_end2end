@@ -12,11 +12,10 @@
     <string name="start">New Process</string>
     <string name="quit">Quit</string>
     <string name="first_logo"></string>
-    <string name="username">Username :</string>
-    <string name="password">Password :</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
     <string name="connectionBtn">Log in</string>
-    <string name="firstname">First Name :</string>
-    <string name="lastname">Last Name :</string>
+    
     <string name="address"> Address :</string>
     <string name="phone">Phone Number :</string>
     <string name="beneficiarydetail">Beneficiary Information</string>
@@ -67,5 +66,6 @@
     <string name="portfolioDetail_off_message">This product cannot be supplied. The related aid date is maybe passed or not yet allowed to be serve.</string>
     <string name="portfolioDetail_off_title">Product Off</string>
     <string name="title_activity_setup">SetupActivity</string>
+    <string name="closeApp">Close App</string>
 
 </resources>

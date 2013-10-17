@@ -4,56 +4,33 @@
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:orientation="vertical" >
-    
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/agentName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginRight="94dp"
-            android:text=""
-            android:textStyle="bold" />
-
-    </RelativeLayout>
-    
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/supplyTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/layout_color"
         android:gravity="center"
-        android:fontFamily=""
         android:text="@string/supply"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="30sp"
+        android:textColor="@color/background_color"
+        android:textSize="35sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
-    
 
     <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
-        android:layout_height="240dp" >
-
+        android:layout_height="240dp" 
+        android:layout_margin="5dp">
     </ListView>
-    
+
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" />
-    
-    
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -63,22 +40,21 @@
 
         <Button
             android:id="@+id/backBtnSupply"
+            style="@android:style/Animation"
             android:layout_width="150dip"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/backBtn"
             android:background="@drawable/button"
-            style="@android:style/Animation" />
+            android:gravity="center"
+            android:text="@string/backBtn" />
 
         <Button
             android:id="@+id/validBtnSupply"
+            style="@android:style/Animation"
             android:layout_width="150dip"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/validSupplyBtn"
             android:background="@drawable/button"
-            style="@android:style/Animation" />
+            android:gravity="center"
+            android:text="@string/validSupplyBtn" />
     </LinearLayout>
-    
 
 </LinearLayout>

@@ -13,7 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import first.endtoend.adapters.PortfolioAdapter;
 import first.endtoend.facades.PortfolioDetailFacade;
 import first.endtoend.helpers.DialogHelper;
@@ -28,6 +27,7 @@ public class PortfolioActivity extends MyActivity {
 	PortfolioAdapter adapter;
 	GridView gridView;
 	PortfolioDetailFacade pfdFacade;
+	Button backBtn, nextBtn;
 
 
 	@Override
@@ -35,7 +35,7 @@ public class PortfolioActivity extends MyActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_portfolio);
 
-		portfolio = BeneficiaryDetail.portfolio;
+		portfolio = ListBeneficiariesActivity.portfolio;
 		
 
 		try {
@@ -46,15 +46,13 @@ public class PortfolioActivity extends MyActivity {
 			e.printStackTrace();
 		}
 
-		//Displaying the name of the agent
-		TextView agentName = (TextView) findViewById(R.id.agentName);
-		agentName.setText("Agent : "+LoginActivity.user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
-
-
 		//Setting the adapter to the activity view
 		adapter = new PortfolioAdapter(PortfolioActivity.this, portfolioDetails);
 		gridView = (GridView) findViewById(R.id.gridViewPortfolio);
 		gridView.setAdapter(adapter);
+		
+		for(PortfolioDetail dt : portfolioDetails)
+			System.out.println(dt.getAid().getEndDate());
 
 
 		//Action to do when clicking on the check box select all
@@ -76,10 +74,21 @@ public class PortfolioActivity extends MyActivity {
 				}
 			}
 		});
-
-		//Getting the next button from the layout and adding action on it
-		Button nextBtn = (Button) findViewById(R.id.nextBtnPortfolio);
-		nextBtn.setOnClickListener(new OnClickListener() {			
+		
+		
+		backBtn = (Button) findViewById(R.id.backBtn);
+		backBtn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onBackPressed();
+				
+			}
+		});
+		
+		nextBtn = (Button) findViewById(R.id.nextBtn);
+		nextBtn.setOnClickListener(new OnClickListener() {
+			
 			@Override
 			public void onClick(View v) {
 				int verif = thereIsOneChecked();
@@ -96,18 +105,7 @@ public class PortfolioActivity extends MyActivity {
 				}
 			}
 		});
-
-
-		//Getting the back button from the layout and adding action on it
-		Button backBtn = (Button) findViewById(R.id.backBtnPortfolio);
-		backBtn.setOnClickListener(new OnClickListener() {					
-			@Override
-			public void onClick(View v) {
-				onBackPressed();						
-			}
-		});	
 	}
-
 
 	//method to verify if there is at least on checkbox checked
 	public int thereIsOneChecked(){
@@ -125,7 +123,7 @@ public class PortfolioActivity extends MyActivity {
 
 	@Override
 	public void onBackPressed() {
-		Intent intent = new Intent(PortfolioActivity.this, BeneficiaryDetail.class);
+		Intent intent = new Intent(PortfolioActivity.this, ListBeneficiariesActivity.class);
 		startActivity(intent);
 		finish();
 	}

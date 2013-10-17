@@ -25,14 +25,7 @@
             android:orientation="vertical"
             android:padding="10dip" >
 
-            <TextView
-                android:id="@+id/username"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/username"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:fontFamily="" />
+            
 
             <EditText
                 android:id="@+id/editLogin"
@@ -41,17 +34,10 @@
                 android:layout_marginBottom="20dip"
                 android:layout_marginTop="5dip"
                 android:inputType="textPersonName"
-                android:textColor="@color/text_color" >
+                android:textColor="@color/text_color" 
+                android:hint="@string/username">
             </EditText>
 
-            <TextView
-                android:id="@+id/password"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/password"
-                android:textSize="20sp"
-                android:textStyle="bold" 
-                android:fontFamily=""/>
 
             <EditText
                 android:id="@+id/editPassword"
@@ -60,7 +46,8 @@
                 android:layout_marginTop="5dip"
                 android:inputType="textPassword"
                 android:singleLine="true"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color" 
+                android:hint="@string/password"/>
 
             <TextView
                 android:layout_width="fill_parent"

@@ -1,81 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:orientation="vertical" >
 
-<!--     <LinearLayout -->
-<!--         android:layout_width="match_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:orientation="vertical" > -->
 
-<!--         <LinearLayout -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:orientation="horizontal" > -->
-            
-<!--             <TextView -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_alignBaseline="@+id/textView1" -->
-<!--             android:layout_alignBottom="@+id/textView1" -->
-<!--             android:layout_alignRight="@+id/textView2" -->
-<!--             android:layout_marginRight="41dp" -->
-<!--             android:text="Family : " /> -->
-<!--             <TextView -->
-<!--             android:id="@+id/familyName" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_above="@+id/familyAddress" -->
-<!--             android:layout_toLeftOf="@+id/textView1" -->
-<!--             android:text="family" /> -->
-           
-<!--         </LinearLayout> -->
-<!--         <LinearLayout -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:orientation="horizontal" > -->
-<!--             <TextView -->
-<!--             android:id="@+id/textView1" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_above="@+id/familyName" -->
-<!--             android:layout_alignLeft="@+id/familyPhone" -->
-<!--             android:layout_marginLeft="30dp" -->
-<!--             android:text="Address : " /> -->
-<!--             <TextView -->
-<!--             android:id="@+id/familyAddress" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:layout_centerVertical="true" -->
-<!--             android:layout_toLeftOf="@+id/familyPhone" -->
-<!--             android:text="address" /> -->
-            
-<!--         </LinearLayout> -->
-<!--         <LinearLayout -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:orientation="horizontal" > -->
-<!--             <TextView -->
-<!--             android:id="@+id/textView2" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:text="Telephone : " /> -->
-<!--          <TextView -->
-<!--             android:id="@+id/familyPhone" -->
-<!--             android:layout_width="wrap_content" -->
-<!--             android:layout_height="wrap_content" -->
-<!--             android:text="Phone" /> -->
-<!--         </LinearLayout> -->
-        
-        
-<!--     </LinearLayout> -->
 
      <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content" 
-        android:background="@android:color/holo_blue_dark"
+        android:background="@color/layout_color"
         android:layout_margin="5dp"
         android:padding="15dp">
         
@@ -83,7 +19,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/bold_title"
+            android:layout_alignLeft="@+id/textView2"
             android:text="Family : " />
         
            <TextView
@@ -91,6 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/textView1"
+            style="@style/bold_title"
             android:text="family" />
            
            <View style="@style/separator" android:id="@+id/sp1" android:layout_below="@id/familyName"/>"
@@ -100,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/sp1"
-            style="@style/bold_title"
+            
             android:text="Telephone : " />
 
         <TextView
@@ -109,6 +46,7 @@
             android:layout_height="wrap_content"
              android:layout_below="@id/sp1"
             android:layout_toRightOf="@id/textView2"
+            style="@style/bold_title"
             android:text="Phone" />
         
       <View style="@style/separator" android:id="@+id/sp2" android:layout_below="@id/familyPhone"/>
@@ -118,7 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/sp2"
-            style="@style/bold_title"
+            
             android:text="Address : " />
 
         <TextView
@@ -127,7 +65,11 @@
             android:layout_height="wrap_content"
              android:layout_below="@id/sp2"
             android:layout_toRightOf="@+id/textView3"
+            style="@style/bold_title"
             android:text="address" />
+
+        
+
     </RelativeLayout> 
     
      <View
@@ -138,7 +80,36 @@
     <ListView
         android:id="@+id/listViewBeneficiaries"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="220dp"
+        android:layout_margin="5dp"
+        android:choiceMode="singleChoice"
+        android:padding="15dp" >
+
     </ListView>
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/backBtn"
+            android:layout_width="150dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/backBtn"
+            android:background="@drawable/button"
+            style="@android:style/Animation" />
+
+        <Button
+            android:id="@+id/nextBtn"
+            android:layout_width="150dip"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/nextBtn"
+            android:background="@drawable/button"
+            style="@android:style/Animation" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
-import com.first.nfc.apduql.exceptions.*;
+import com.first.nfc.apduql.exceptions.ApduError;
 import com.google.android.gcm.GCMRegistrar;
 import com.google.gson.reflect.TypeToken;
 
@@ -66,7 +66,7 @@ public class LoginActivity extends MyActivity {
 	String PREF_NAME = "my_pref_settings";
 	ProgressDialog dialog;
 	Boolean hasRun;
-
+	
 	CategoryFacade categoryFacade;
 	ProductFacade productFacade;
 	AidFacade aidFacade;
@@ -350,7 +350,7 @@ public class LoginActivity extends MyActivity {
 
 	public void load_categories() {
 		if (InternetHelper.isOnline(LoginActivity.this)) {
-			System.out.println(">>>>>><>>>> Loading Categories");
+			System.out.println(">>>>>>>>>> Loading Categories <<<<<<<");
 			String url = getString(R.string.url)
 					+ getString(R.string.load_Categories);
 			DialogHelper.showProcessingDialog(dialog,
@@ -465,7 +465,7 @@ public class LoginActivity extends MyActivity {
 										e.printStackTrace();
 									}
 							System.out
-							.println(">>>>>>>>>>>  End Loading Product<<<<<<<<<<<<");
+							.println(">>>>>>>>>>>  End Loading Product <<<<<<<<<<<<");
 							load_aids();
 							break;
 

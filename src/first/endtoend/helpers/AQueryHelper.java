@@ -385,14 +385,18 @@ public class AQueryHelper {
 	}
 
 	public static void delete_aid(Context context, int aidId){
+		System.out.println("deleting aid");
 		try {
 			//delete all portfolio details related to this aid
 			PortfolioDetailFacade pfdFacade = new PortfolioDetailFacade(context);
 			List<PortfolioDetail> pfDetails = pfdFacade.findEntitiesByForeignKey(aidId, Aid.class);
-			if(pfDetails != null)
+			if(pfDetails != null){
+				System.out.println("pfdetails not null");
 				for(PortfolioDetail pfd : pfDetails)
 					pfdFacade.delete(pfd.getPortfolioDetailId());
-
+			}
+			else{
+			}	
 			//delete the aid
 			new AidFacade(context).delete(aidId);
 
@@ -440,16 +444,4 @@ public class AQueryHelper {
 		}
 	}
 
-
-	/**
-	 * method to check 
-	 * @param <T>
-	 * @param s
-	 * @param list2
-	 * @return
-	 */
-	public static <T> boolean existObjectInList(T entity, List<T> list2){
-		System.out.println("comparaison : "+list2.contains(entity));
-		return list2.contains(entity);
-	}
 }

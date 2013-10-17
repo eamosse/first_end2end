@@ -32,7 +32,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
@@ -92,12 +91,7 @@ public class ConfirmationSupplyActivity extends MyActivity implements LocationLi
 
 		this.takePhoto();
 
-		//Displaying the name of the agent
-		TextView agentName = (TextView) findViewById(R.id.agentName);
-		agentName.setText("Agent : "+LoginActivity.user.getFirstName().charAt(0)+" "+LoginActivity.user.getLastName());
-
-
-		productsSeleted = BeneficiaryDetail.portfolio.getProductsSelected();
+		productsSeleted = ListBeneficiariesActivity.portfolio.getProductsSelected();
 
 		adapter = new ConfirmationAdapter(ConfirmationSupplyActivity.this, productsSeleted);
 		ListView listeview = (ListView) findViewById(R.id.listViewConfirm);
