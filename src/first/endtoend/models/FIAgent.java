@@ -36,14 +36,11 @@ public class FIAgent implements Serializable {
 	
 	
 	
-	public FIAgent(int id, String firstName, String lastName, String username,
-			String password, String sessionId) {
+	public FIAgent(int id, String firstName, String lastName,String sessionId) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.username = username;
-		this.password = password;
 		this.sessionId = sessionId;
 	}
 	

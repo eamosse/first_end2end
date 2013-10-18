@@ -66,7 +66,7 @@ public class LoginActivity extends MyActivity {
 	String PREF_NAME = "my_pref_settings";
 	ProgressDialog dialog;
 	Boolean hasRun;
-	
+	EditText editLogin, editPassword;
 	CategoryFacade categoryFacade;
 	ProductFacade productFacade;
 	AidFacade aidFacade;
@@ -87,7 +87,8 @@ public class LoginActivity extends MyActivity {
 		aquery = new AQuery(this);
 		settings = getSharedPreferences(PREF_NAME, 0); // load the preferences
 		hasRun = settings.getBoolean("hasRun", false); // see if it's run before, default no		
-
+		editLogin = (EditText) findViewById(R.id.editLogin);
+		editPassword = (EditText) findViewById(R.id.editPassword);
 		categoryFacade = new CategoryFacade(this);
 		productFacade = new ProductFacade(this);
 		aidFacade = new AidFacade(this);
@@ -104,48 +105,69 @@ public class LoginActivity extends MyActivity {
 			@Override
 			public void onClick(View v) {
 
-				username = ((EditText) findViewById(R.id.editLogin)).getText()
-						.toString();
-				password = ((EditText) findViewById(R.id.editPassword))
-						.getText().toString();
+				username = editLogin.getText().toString();
+				password = editPassword.getText().toString();
 
 				if ((username.equals("")) && (password.equals(""))) {
 					Toast.makeText(LoginActivity.this, R.string.fill,
 							Toast.LENGTH_SHORT).show();
 
 				} else {
-					if(areSEAndAppletPresents)
-						ctrl.execute("select username, password from pds_applet", Constant.GET_LOGIN_INFO_CODE);
-					else{
-						if (!hasRun) {
-							loginOnServer();
-						} else {
-							// code if the app HAS run before	
-							usernameStored = settings.getString("username", "");
-							passwordStored = settings.getString("password", "");
-							checkLoginAndPassword();
-						}
-					}
+					ctrl.execute("select username, password from pds_applet", 
+							Constant.GET_LOGIN_INFO_CODE);
 				}
 			}
 		});
 	}
 
+	
+	/**
+	 * Method to process login, either online or offline
+	 * @param username
+	 * @param password
+	 */
+	private void loginProcess(String username, String password){
+		if(loginAndPasswordOk(username, password)){
+			if (!hasRun) {
+				loginOnServer(username, password);
+			} else {
+				user = retrieveUserStored();
+				Intent intent = new Intent(LoginActivity.this,TagActivity.class);
+				startActivity(intent);
+				finish();
+			}
+		}
+		else{
+			alert = new AlertDialog.Builder(LoginActivity.this);
+			DialogHelper.showErrorDialog(alert, getString(R.string.error),
+					getString(R.string.wrong));
+		}
+	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == Constant.PIN_LAUNCHED_REQUEST && resultCode == RESULT_OK){
-			if(!hasRun)
-				loginOnServer();
+			if(loginAndPasswordOk(username, password)){
+				if (!hasRun) {
+					loginOnServer(username, password);
+				} else {
+					user = retrieveUserStored();
+					Intent intent = new Intent(LoginActivity.this,TagActivity.class);
+					startActivity(intent);
+					finish();
+				}
+			}
 			else{
-				ctrl.setCallback(this);
-				ctrl.execute("select username, password from pds_applet", Constant.GET_LOGIN_INFO_CODE);
+				alert = new AlertDialog.Builder(LoginActivity.this);
+				DialogHelper.showErrorDialog(alert, getString(R.string.error),
+						getString(R.string.wrong));
 			}
 		}
 	}
-	private void loginOnServer() {
+
+	private void loginOnServer(String username, String password) {
 		// code for if this is the first time the app has run
-		String url = getString(R.string.url)
-				+ getString(R.string.connexion);
+		String url = getString(R.string.url)+ getString(R.string.connexion);
 
 		if (InternetHelper.isOnline(LoginActivity.this)) {
 			async_post(url, true, false, username, password);
@@ -233,7 +255,9 @@ public class LoginActivity extends MyActivity {
 							break;
 
 						case Constant.NOT_FOUND:
-							showErrorDialog(getString(R.string.wrong), 0);							
+							alert = new AlertDialog.Builder(LoginActivity.this);
+							DialogHelper.showErrorDialog(alert, getString(R.string.error),
+									getString(R.string.wrong));							
 							break;
 						}
 						break;
@@ -760,28 +784,19 @@ public class LoginActivity extends MyActivity {
 		System.out.println("error code " + error.getApduError()[0]);
 	}
 
-	@Override
-	public void onConnected() {
-	}
 
 	@Override
 	public void onResponse(Map<String, Object> results, int commandId) {
 		switch (commandId) {
 		case Constant.GET_LOGIN_INFO_CODE:
 			if(results.size()>= 2) {
-				if (!hasRun) {
-					loginOnServer();
-				} else {
-					usernameStored = String.valueOf(results.get("username"));
-					passwordStored = String.valueOf(results.get("password"));
-					System.out.println(usernameStored + "@@@@" + passwordStored);
-					checkLoginAndPassword();
-				}
+				usernameStored = String.valueOf(results.get("username"));
+				passwordStored = String.valueOf(results.get("password"));
+				loginProcess(username, password);
 			}
 			break;
 		}
 	}
-
 
 	private FIAgent retrieveUserStored() {		
 		String firstNameStored = settings.getString("firstName", "");
@@ -789,22 +804,13 @@ public class LoginActivity extends MyActivity {
 		String sessionIdStored = settings.getString("sessionId", "");
 		int agentIdStored = settings.getInt("agentId", 0);
 		return new FIAgent(agentIdStored, firstNameStored,
-				lastNameStored, usernameStored, passwordStored,
-				sessionIdStored);
+				lastNameStored,sessionIdStored);
 	}
 
 
-	private void checkLoginAndPassword(){
-		if (username.equals(usernameStored)	&& password.equals(passwordStored)) {
-			user = retrieveUserStored();
-			Intent intent = new Intent(LoginActivity.this,TagActivity.class);
-			startActivity(intent);
-			finish();
-		} else {
-			alert = new AlertDialog.Builder(LoginActivity.this);
-			DialogHelper.showErrorDialog(alert, getString(R.string.error),
-					getString(R.string.wrong));
-		}
+	private boolean loginAndPasswordOk(String username, String password){
+		return (username.equals(usernameStored)	&& password.equals(passwordStored));
+		
 	}
 
 	private void storeUser() {
@@ -815,10 +821,6 @@ public class LoginActivity extends MyActivity {
 		edit.putString("lastName",user.getLastName());
 		edit.putString("sessionId",user.getSessionId());
 		edit.putBoolean("hasRun", true); // set to hasrun
-		if(!areSEAndAppletPresents){
-			edit.putString("username", user.getUsername());
-			edit.putString("password", password);
-		}
 		edit.commit(); // apply	
 	}
 
@@ -828,7 +830,7 @@ public class LoginActivity extends MyActivity {
 			if(InternetHelper.isOnline(LoginActivity.this)){
 				async_post(getString(R.string.url)
 						+ getString(R.string.connexion), true,
-						false, username, password);
+						false, usernameStored, passwordStored);
 			}else{
 				showInternetErrorDialog(0);
 			}

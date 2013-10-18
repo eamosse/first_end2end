@@ -19,7 +19,6 @@ import first.endtoend.helpers.Constant;
 
 public class MyActivity extends Activity implements ApduCallBack{
 
-	protected boolean areSEAndAppletPresents;
 	
 	protected NfcController ctrl;
 
@@ -28,7 +27,6 @@ public class MyActivity extends Activity implements ApduCallBack{
 		super.onCreate(savedInstanceState);
 		MyApplication act = (MyApplication)getApplication(); 
 	    ctrl = act.getController();
-	    areSEAndAppletPresents = act.areSEAndAppletPresents;
 	   
 	}
 	

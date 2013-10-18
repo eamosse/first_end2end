@@ -103,6 +103,7 @@ public class ConfirmationSupplyActivity extends MyActivity implements LocationLi
 			public void onClick(View v) {
 
 				trace = new Trace(TagActivity.family.getBeneficiarySelected(), latitude, longitude, accuracy, new Date(System.currentTimeMillis()), photo, LoginActivity.user.getId());
+				System.out.println("Agent Id is : "+trace.getAgentId());
 
 				if(trace.getPhoto() != null){
 					if((trace.getLatitude() == 0) || (trace.getLongitude() ==0)){
