@@ -63,7 +63,6 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.d(TAG, "RECEIVED A MESSAGE :"+message);
 
 
-
 		System.out.println("GCMItentService onMessage :"+message);
 		try {
 			json = new JSONObject(message);
