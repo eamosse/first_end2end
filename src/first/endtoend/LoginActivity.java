@@ -58,9 +58,10 @@ import first.endtoend.models.Product;
 import first.endtoend.models.RationCard;
 
 public class LoginActivity extends MyActivity {
-	String username, password, message,regId, usernameStored, passwordStored;
+	String username, password, message,regId;
 	public static FIAgent user;
 	public static List<Cookie> cookies;
+	public static String usernameStored, passwordStored;
 	AlertDialog.Builder alert;
 	SharedPreferences settings;
 	String PREF_NAME = "my_pref_settings";
@@ -162,6 +163,7 @@ public class LoginActivity extends MyActivity {
 				DialogHelper.showErrorDialog(alert, getString(R.string.error),
 						getString(R.string.wrong));
 			}
+			
 		}
 	}
 

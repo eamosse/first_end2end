@@ -300,12 +300,28 @@ public class PinEntryView extends MyActivity {
 
 	@Override
 	public void onResponse(Map<String, Object> results, int commandId) {
-		System.out.println("Response received again!!!!!!!!!");
-		statusView.setTextColor(Color.GREEN);
-		statusView.setText("Correct");
-		Log.v("PinView", "Correct PIN");
-		setResult(RESULT_OK);
-		finish();
+		switch (commandId) {
+		case Constant.GET_PIN_CODE:
+			System.out.println("Response received again!!!!!!!!!");
+			statusView.setTextColor(Color.GREEN);
+			statusView.setText("Correct");
+			Log.v("PinView", "Correct PIN");
+			ctrl.execute("select username, password from pds_applet", 
+					Constant.GET_LOGIN_INFO_CODE);
+//			setResult(RESULT_OK);
+//			finish();
+			break;
+
+		case Constant.GET_LOGIN_INFO_CODE:
+			if(results.size()>= 2) {
+				LoginActivity.usernameStored = String.valueOf(results.get("username"));
+				LoginActivity.passwordStored = String.valueOf(results.get("password"));
+			}
+			setResult(RESULT_OK);
+			finish();
+			break;
+		}
+		
 	}
 	
 	@Override

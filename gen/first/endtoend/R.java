@@ -275,8 +275,8 @@ public final class R {
         public static final int supplyBtn=0x7f050039;
         public static final int supplyQuantity=0x7f050046;
         public static final int supply_error=0x7f050014;
-        /**    <string name="url">http://192.168.0.115:8080/First-EndToEnd/</string>
-   
+        /**        <string name="url">http://134.59.152.106/First-EndToEnd/</string>
+ 
          */
         public static final int syncTrace=0x7f050067;
         public static final int tagImage=0x7f05003b;

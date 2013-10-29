@@ -103,7 +103,7 @@ public class ConfirmationSupplyActivity extends MyActivity implements LocationLi
 			public void onClick(View v) {
 
 				trace = new Trace(TagActivity.family.getBeneficiarySelected(), latitude, longitude, accuracy, new Date(System.currentTimeMillis()), photo, LoginActivity.user.getId());
-				System.out.println("Agent Id is : "+trace.getAgentId());
+				
 
 				if(trace.getPhoto() != null){
 					if((trace.getLatitude() == 0) || (trace.getLongitude() ==0)){
@@ -341,6 +341,7 @@ public class ConfirmationSupplyActivity extends MyActivity implements LocationLi
 		}
 
 		JSONObject ob = JsonHelper.createJsonObject(trace);
+		
 		String url = getString(R.string.url)+getString(R.string.syncTrace);
 
 		DialogHelper.showProcessingDialog(progressDialog, getString(R.string.sending), getString(R.string.wait));
@@ -350,7 +351,7 @@ public class ConfirmationSupplyActivity extends MyActivity implements LocationLi
 		aquery.progress(progressDialog).ajax(url, params, JSONObject.class, new AjaxCallback<JSONObject>() {
 			@Override
 			public void callback(String url, JSONObject json, AjaxStatus status) {
-
+				System.out.println();
 				switch (status.getCode()) {
 				case Constant.REQUEST_OK:
 
